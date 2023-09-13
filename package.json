@@ -1,0 +1,17 @@
+{
+  "name": "editor-markdown",
+  "version": "1.0.0",
+  "description": "Editor de markdown",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bootstrap-icons": "^1.11.0",
+    "electron": "^26.2.1",
+    "electron-reload": "^2.0.0-alpha.1",
+    "marked": "^9.0.0"
+  }
+}
