@@ -12,33 +12,32 @@
   </head>
   <body>
     <header>
-      <section class="menu">
-        <section class="close">
-          <div class="logo"></div>
-          <div class="titulo">
-            <h3 id="titulo">Archivo sin nombre</h3>
-          </div>
-          <div class="btn-close">
-            <button id="min"><i class="bi bi-window-desktop"></i></button>
-            <button id="max"><i class="bi bi-window-fullscreen"></i></button>
-            <button id="unmax" style="display: none">
-              <i class="bi bi-window-stack"></i>
-            </button>
-            <button id="close"><i class="bi bi-x-lg"></i></button>
-          </div>
-        </section>
-        <nav class="comandos">
-          <button type="button" id="new">
-            <i class="bi bi-filetype-md"></i>
-          </button>
-          <button type="button" id="open">
-            <i class="bi bi-folder2-open"></i>
-          </button>
-          <button type="button" id="save"><i class="bi bi-floppy"></i></button>
-          <button type="button" id="save-as">
-            <i class="bi bi-floppy2-fill"></i>
-          </button>
-        </nav>
+      <section class="top-bar">
+        <div class="left-section">
+            <div class="logo"></div>
+            <nav class="comandos">
+              <button type="button" id="new" title="New File"><i class="bi bi-file-earmark-plus"></i></button>
+              <button type="button" id="open" title="Open File"><i class="bi bi-folder2-open"></i></button>
+              <button type="button" id="save" title="Save"><i class="bi bi-floppy"></i></button>
+              <button type="button" id="save-as" title="Save As"><i class="bi bi-floppy2-fill"></i></button>
+              <button type="button" id="close-file" title="Close File"><i class="bi bi-x-square"></i></button>
+            </nav>
+        </div>
+        
+        <div class="center-section">
+            <div class="titulo" draggable="true">
+                <h3 id="titulo">Archivo sin nombre</h3>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="btn-close">
+                <button id="min"><i class="bi bi-dash-lg"></i></button>
+                <button id="max"><i class="bi bi-square"></i></button>
+                <button id="unmax" style="display: none"><i class="bi bi-back"></i></button>
+                <button id="close"><i class="bi bi-x-lg"></i></button>
+            </div>
+        </div>
       </section>
     </header>
     <main>

@@ -8,8 +8,9 @@ const {
   isMaximized,
 } = require("./windows");
 const path = require("path");
+const electronPath = path.join(__dirname, "node_modules", ".bin", "electron" + (process.platform === "win32" ? ".cmd" : ""));
 require("electron-reload")(__dirname, {
-  electron: path.join(__dirname, "node_modules", ".bin", "electron"),
+  electron: electronPath,
   hardResetMethod: "exit",
 });
 
@@ -26,8 +27,15 @@ ipcMain.on("open-file", (e) => {
   let ruta = dialog.showOpenDialogSync({
     defaultPath: path.join(__dirname, "assets/files/"),
   });
-  console.log(ruta[0]);
-  e.returnValue = ruta[0];
+  if(ruta){
+    e.returnValue = ruta[0];
+  }else{
+    e.returnValue = null;
+  }
+});
+
+ipcMain.on("save-file", (e) => {
+  e.returnValue = true;
 });
 
 ipcMain.on("save-as-file", (e) => {

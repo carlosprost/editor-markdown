@@ -4,15 +4,35 @@ const fs = require("fs");
 const editor = document.querySelector("#editor");
 const preview = document.querySelector("#preview");
 let titulo = document.querySelector("#titulo");
+let pre_code = document.querySelectorAll("code");
+
+iniciarPrograma();
+function iniciarPrograma() {
+  let ruta = obtenerRuta();
+
+  if (ruta == null || ruta == "" || ruta == undefined) {
+    pantallaDeInicio();
+    deshabilitarEditor();
+  } else {
+    habilitarEditor();
+    cargarArchivoAbierto(obtenerRuta());
+  }
+}
 
 editor.addEventListener("keyup", (e) => {
+  if (!comprobarCambios()) {
+    titulo.innerHTML += "*";
+  }
   convertMarkdown(e.target.value);
 });
 
+function comprobarCambios() {
+  return titulo.innerHTML.includes("*");
+}
+
 function convertMarkdown(text) {
-  preview.innerHTML = marked.parse(text, {
-    sanitize: true,
-  });
+  // Run marked
+  preview.innerHTML = marked.parse(text);
 }
 
 /* comandos */
@@ -20,31 +40,74 @@ const newFile = document.querySelector("#new");
 const openFile = document.querySelector("#open");
 const saveFile = document.querySelector("#save");
 const saveAsFile = document.querySelector("#save-as");
+const closeFile = document.querySelector("#close-file");
 
 newFile.addEventListener("click", () => {
-  editor.value = "";
-  preview.innerHTML = "";
-  titulo.innerHTML = "Archivo sin nombre";
+  pantallaDeInicio();
+  habilitarEditor();
+  resetRuta();
+});
+
+closeFile.addEventListener("click", () => {
+  pantallaDeInicio();
+  deshabilitarEditor();
+  resetRuta();
 });
 
 openFile.addEventListener("click", () => {
+  if (estaDeshabilitadoEditor()) habilitarEditor();
   let ruta = ipcRenderer.sendSync("open-file");
   rutaArchivo(ruta);
   cargarArchivoAbierto(obtenerRuta());
 });
 
-saveFile.addEventListener("click", (e) => {
-  e.preventDefault();
-  guardarComo(obtenerRuta());
+saveFile.addEventListener("click", () => {
+  let ruta = obtenerRuta();
+  if (ruta == null || ruta == "" || ruta == undefined) {
+    guardarArchivoComo();
+  } else {
+    guardarComo(ruta);
+  }
+
+  if (comprobarCambios()) {
+    titulo.innerHTML = obtenerFileName();
+  }
 });
 
 saveAsFile.addEventListener("click", () => {
-  let ruta = ipcRenderer.sendSync("save-as-file");
-  rutaArchivo(ruta);
-  guardarComo(obtenerRuta());
+  guardarArchivoComo();
+
+  if (comprobarCambios()) {
+    titulo.innerHTML = obtenerFileName();
+  }
 });
 
+function pantallaDeInicio() {
+  editor.value = "";
+  preview.innerHTML = "";
+  titulo.innerHTML = "Archivo sin nombre";
+}
+
+function habilitarEditor() {
+  editor.style.display = "block";
+}
+
+function deshabilitarEditor() {
+  editor.style.display = "none";
+}
+
+function estaDeshabilitadoEditor() {
+  return editor.style.display == "none";
+}
+
+function guardarArchivoComo() {
+  let ruta = ipcRenderer.sendSync("save-as-file");
+  rutaArchivo(ruta);
+  guardarComo(ruta);
+}
+
 function cargarArchivoAbierto(ruta) {
+  if (!ruta) return;
   let contenido = fs.readFileSync(ruta, "utf-8");
 
   titulo.innerHTML = obtenerFileName();
@@ -53,16 +116,23 @@ function cargarArchivoAbierto(ruta) {
 }
 
 function guardarComo(ruta) {
+  if (!ruta) return;
   fs.writeFileSync(ruta, editor.value);
   cargarArchivoAbierto(ruta);
 }
 
 function rutaArchivo(ruta) {
+  if (!ruta) return;
   window.localStorage.setItem("ruta", ruta);
   window.localStorage.setItem(
     "fileName",
     ruta.split("\\").pop().split("/").pop()
   );
+}
+
+function resetRuta() {
+  window.localStorage.setItem("ruta", "");
+  window.localStorage.setItem("fileName", "");
 }
 
 function obtenerRuta() {
@@ -72,6 +142,8 @@ function obtenerRuta() {
 function obtenerFileName() {
   return window.localStorage.getItem("fileName");
 }
+
+
 
 /* Función de la ventana */
 const close = document.querySelector("#close");
