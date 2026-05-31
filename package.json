@@ -28,7 +28,7 @@
       "icon": "src/assets/icon.png",
       "target": [
         "nsis",
-        "appx"
+        "msix"
       ]
     },
     "nsis": {
@@ -38,7 +38,7 @@
       "createStartMenuShortcut": true,
       "shortcutName": "Editor Markdown"
     },
-    "appx": {
+    "msix": {
       "identityName": "TU_IDENTITY_NAME_DE_MICROSOFT",
       "publisher": "CN=TU_PUBLISHER_ID_DE_MICROSOFT",
       "publisherDisplayName": "Carlos Prost",
