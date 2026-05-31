@@ -20,7 +20,8 @@
   },
   "build": {
     "appId": "com.carlosprost.editormarkdown",
-    "productName": "EditorMarkdown",
+    "productName": "WolfTel.EditorMarkdown",
+    "artifactName": "${productName}_${version}.${ext}",
     "directories": {
       "output": "dist"
     },
