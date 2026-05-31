@@ -26,7 +26,10 @@
     },
     "win": {
       "icon": "src/assets/icon.png",
-      "target": "nsis"
+      "target": [
+        "nsis",
+        "appx"
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -34,6 +37,16 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Editor Markdown"
+    },
+    "appx": {
+      "identityName": "TU_IDENTITY_NAME_DE_MICROSOFT",
+      "publisher": "CN=TU_PUBLISHER_ID_DE_MICROSOFT",
+      "publisherDisplayName": "Carlos Prost",
+      "displayName": "Editor de Markdown Premium",
+      "showNameOnTiles": true,
+      "languages": [
+        "es-ES"
+      ]
     },
     "files": [
       "src/**/*",
