@@ -7,7 +7,7 @@
     "start": "electron .",
     "dist": "electron-builder"
   },
-  "author": "",
+  "author": "WolfTeI",
   "license": "ISC",
   "dependencies": {
     "bootstrap-icons": "^1.11.3",
@@ -20,7 +20,7 @@
   },
   "build": {
     "appId": "com.carlosprost.editormarkdown",
-    "productName": "WolfTel.EditorMarkdown",
+    "productName": "WolfTeI.EditorMarkdown",
     "artifactName": "${productName}_${version}.${ext}",
     "directories": {
       "output": "dist"
@@ -40,7 +40,7 @@
       "shortcutName": "Editor Markdown"
     },
     "appx": {
-      "identityName": "WolfTel.EditorMarkdown",
+      "identityName": "WolfTeI.EditorMarkdown",
       "publisher": "CN=9FA1EC2E-07E2-4B86-BAD0-4F3B9AAD28B8",
       "publisherDisplayName": "WolfTeI",
       "displayName": "EditorMarkdown",
