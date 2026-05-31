@@ -20,9 +20,6 @@
 }
 
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-main);
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -48,18 +45,25 @@ body {
   background: var(--text-secondary);
 }
 
-/* Header / Title Bar */
-header {
+/* Estilo Base del Editor */
+.editor-app {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+}
+
+/* Header / Barra de Título */
+.editor-header {
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   height: 45px;
-  display: block; /* changed to block because .top-bar handles layout */
+  display: block;
   padding: 0;
-  -webkit-app-region: drag; /* Electron drag area */
+  -webkit-app-region: drag;
   user-select: none;
 }
 
-.top-bar {
+.editor-header__bar {
   display: flex;
   width: 100%;
   height: 100%;
@@ -68,45 +72,45 @@ header {
   padding: 0 10px;
 }
 
-.left-section, .right-section {
-    display: flex;
-    align-items: center;
-    flex: 1; /* Allow them to take space */
+.editor-header__section {
+  display: flex;
+  align-items: center;
+  flex: 1;
 }
 
-.left-section {
-    justify-content: flex-start;
-    gap: 10px;
+.editor-header__section--left {
+  justify-content: flex-start;
+  gap: 10px;
 }
 
-.right-section {
-    justify-content: flex-end;
+.editor-header__section--center {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.center-section {
-    flex: 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.editor-header__section--right {
+  justify-content: flex-end;
 }
 
-.logo {
-  width: 20px;
-  height: 20px;
-  background-image: url('../assets/icon.png');
-  background-size: cover;
-  display: none;
+.editor-header__logo {
+  width: 22px;
+  height: 22px;
+  display: block;
+  background-image: url("../assets/icon.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: transform 0.3s ease;
 }
-.logo::before {
-    content: "\F58E"; /* bi-markdown-fill */
-    font-family: "bootstrap-icons";
-    color: var(--accent-color);
-    font-size: 1.2rem;
-    display: block;
-}
-.logo { display: block !important; background: none; }
 
-.titulo {
+.editor-header__logo:hover {
+  transform: scale(1.1);
+}
+
+.editor-header__title-container {
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-secondary);
@@ -115,20 +119,20 @@ header {
   text-overflow: ellipsis;
 }
 
-.titulo h3 {
-    font-size: inherit;
-    margin: 0;
-    font-weight: normal;
+.editor-header__title {
+  font-size: inherit;
+  margin: 0;
+  font-weight: normal;
 }
 
-/* Window Controls */
-.btn-close {
+/* Controles de Ventana */
+.editor-header__window-controls {
   display: flex;
   gap: 5px;
   -webkit-app-region: no-drag;
 }
 
-.btn-close button {
+.editor-header__control-btn {
   background: transparent;
   border: none;
   color: var(--text-secondary);
@@ -142,24 +146,24 @@ header {
   transition: all 0.2s;
 }
 
-.btn-close button:hover {
+.editor-header__control-btn:hover {
   background-color: var(--bg-tertiary);
   color: var(--text-primary);
 }
 
-.btn-close button#close:hover {
-  background-color: var(--danger);
-  color: white;
+.editor-header__control-btn--close:hover {
+  background-color: var(--danger) !important;
+  color: white !important;
 }
 
-/* Toolbar */
-.comandos {
+/* Barra de Comandos / Acciones */
+.editor-header__actions {
   display: flex;
   gap: 5px;
   -webkit-app-region: no-drag;
 }
 
-.comandos button {
+.editor-header__action-btn {
   background: transparent;
   border: 1px solid transparent;
   color: var(--text-secondary);
@@ -174,44 +178,51 @@ header {
   font-size: 1rem;
 }
 
-.comandos button:hover {
+.editor-header__action-btn:hover {
   background-color: var(--bg-tertiary);
   color: var(--accent-color);
   border-color: var(--bg-tertiary);
 }
 
-/* Main Area */
-main {
+/* Workspace de Trabajo */
+.editor-workspace {
   flex: 1;
   display: flex;
   overflow: hidden;
 }
 
-.principal {
-  display: flex;
-  width: 100%;
-  height: 100%;
-}
-
-.editor, .preview {
-  flex: 1;
+.editor-workspace__panel {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.editor {
+.editor-workspace__panel--editor {
+  width: 50%;
+  max-width: 50%;
   border-right: 1px solid var(--border-color);
   background-color: var(--bg-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  opacity: 1;
 }
 
-.preview {
+.editor-workspace__panel--collapsed {
+  width: 0 !important;
+  max-width: 0 !important;
+  opacity: 0 !important;
+  border-right: none !important;
+}
+
+.editor-workspace__panel--preview {
+  flex: 1;
   background-color: var(--bg-primary);
   padding: 20px;
   overflow-y: auto;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-textarea#editor {
+.editor-workspace__textarea {
   width: 100%;
   height: 100%;
   background-color: var(--bg-primary);
@@ -225,13 +236,18 @@ textarea#editor {
   outline: none;
 }
 
-/* Markdown Preview Styling */
-#preview {
+/* Estilos de la Vista Previa de Markdown */
+.editor-workspace__preview-content {
   color: var(--text-primary);
   line-height: 1.7;
 }
 
-#preview h1, #preview h2, #preview h3, #preview h4, #preview h5, #preview h6 {
+.editor-workspace__preview-content h1, 
+.editor-workspace__preview-content h2, 
+.editor-workspace__preview-content h3, 
+.editor-workspace__preview-content h4, 
+.editor-workspace__preview-content h5, 
+.editor-workspace__preview-content h6 {
   color: var(--text-primary);
   margin-top: 1.5em;
   margin-bottom: 0.5em;
@@ -239,31 +255,31 @@ textarea#editor {
   line-height: 1.2;
 }
 
-#preview h1 { font-size: 2.5em; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-#preview h2 { font-size: 2em; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-#preview h3 { font-size: 1.75em; }
+.editor-workspace__preview-content h1 { font-size: 2.5em; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+.editor-workspace__preview-content h2 { font-size: 2em; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+.editor-workspace__preview-content h3 { font-size: 1.75em; }
 
-#preview p {
+.editor-workspace__preview-content p {
   margin-bottom: 1em;
-  color: var(--text-secondary); /* Slightly lighter for body text */
+  color: var(--text-secondary);
 }
 
-#preview a {
+.editor-workspace__preview-content a {
   color: var(--accent-color);
   text-decoration: none;
 }
-#preview a:hover { text-decoration: underline; }
+.editor-workspace__preview-content a:hover { text-decoration: underline; }
 
-#preview code {
+.editor-workspace__preview-content code {
   background-color: var(--bg-tertiary);
   padding: 2px 6px;
   border-radius: 4px;
   font-family: var(--mono-font);
   font-size: 0.9em;
-  color: #fbbf24; /* Amber-400 for inline code */
+  color: #fbbf24;
 }
 
-#preview pre {
+.editor-workspace__preview-content pre {
   background-color: var(--bg-secondary);
   padding: 15px;
   border-radius: 8px;
@@ -272,51 +288,229 @@ textarea#editor {
   border: 1px solid var(--border-color);
 }
 
-#preview pre code {
+.editor-workspace__preview-content pre code {
   background-color: transparent;
   color: var(--text-primary);
   padding: 0;
 }
 
-#preview blockquote {
+.editor-workspace__preview-content blockquote {
   border-left: 4px solid var(--accent-color);
   margin: 1em 0;
   padding-left: 15px;
   color: var(--text-secondary);
-  background-color: rgba(59, 130, 246, 0.1); /* transparent accent */
+  background-color: rgba(59, 130, 246, 0.1);
   padding: 10px 15px;
   border-radius: 0 4px 4px 0;
 }
 
-#preview img {
+.editor-workspace__preview-content img {
   max-width: 100%;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
-#preview table {
+.editor-workspace__preview-content table {
   width: 100%;
   border-collapse: collapse;
   margin: 1em 0;
 }
 
-#preview th, #preview td {
+.editor-workspace__preview-content th, 
+.editor-workspace__preview-content td {
   border: 1px solid var(--border-color);
   padding: 8px 12px;
   text-align: left;
 }
 
-#preview th {
+.editor-workspace__preview-content th {
   background-color: var(--bg-secondary);
   font-weight: 600;
 }
 
-#preview hr {
-    border: 0;
-    height: 1px;
-    background: var(--border-color);
-    margin: 2em 0;
+.editor-workspace__preview-content hr {
+  border: 0;
+  height: 1px;
+  background: var(--border-color);
+  margin: 2em 0;
 }
 
-/* Utility for hidden elements */
+/* Utilitarios */
 .d-none { display: none !important; }
+
+/* Estilos para Alertas Premium (GitHub Alerts) */
+.editor-alert {
+  margin: 1.5em 0;
+  padding: 15px;
+  border-left: 4px solid var(--accent-color);
+  border-radius: 0 8px 8px 0;
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.editor-alert__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.editor-alert__icon {
+  font-size: 1.1rem;
+}
+
+.editor-alert__title {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.editor-alert__content {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.editor-alert__content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Modificadores por Tipo de Alerta */
+.editor-alert--note {
+  border-left-color: #3b82f6; /* Azul */
+  background-color: rgba(59, 130, 246, 0.08);
+}
+.editor-alert--note .editor-alert__header {
+  color: #3b82f6;
+}
+
+.editor-alert--warning {
+  border-left-color: #fbbf24; /* Amarillo / Ámbar */
+  background-color: rgba(251, 191, 36, 0.08);
+}
+.editor-alert--warning .editor-alert__header {
+  color: #fbbf24;
+}
+
+.editor-alert--tip {
+  border-left-color: #22c55e; /* Verde */
+  background-color: rgba(34, 197, 94, 0.08);
+}
+.editor-alert--tip .editor-alert__header {
+  color: #22c55e;
+}
+
+.editor-alert--important {
+  border-left-color: #a855f7; /* Violeta */
+  background-color: rgba(168, 85, 247, 0.08);
+}
+.editor-alert--important .editor-alert__header {
+  color: #a855f7;
+}
+
+.editor-alert--caution {
+  border-left-color: #ef4444; /* Rojo */
+  background-color: rgba(239, 68, 68, 0.08);
+}
+.editor-alert--caution .editor-alert__header {
+  color: #ef4444;
+}
+
+/* ==========================================================================
+   Estilos Premium Extendidos (Resaltado, Acordeones y Copiar Código)
+   ========================================================================== */
+
+/* Resaltado de Texto Obsidian-Style */
+.editor-workspace__preview-content mark {
+  background-color: rgba(245, 158, 11, 0.3); /* Ámbar fluorescente sutil */
+  color: #fef08a; /* Amarillo clarito en modo oscuro */
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Acordeones de Contenido Notion-Style */
+.editor-workspace__preview-content details {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 1em;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.editor-workspace__preview-content details[open] {
+  background-color: rgba(30, 41, 59, 0.5);
+}
+
+.editor-workspace__preview-content summary {
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editor-workspace__preview-content summary::-webkit-details-marker {
+  display: none;
+}
+
+.editor-workspace__preview-content summary::before {
+  content: "\F285"; /* bi-chevron-right */
+  font-family: "bootstrap-icons";
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+  display: inline-block;
+  color: var(--accent-color);
+}
+
+.editor-workspace__preview-content details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.editor-workspace__preview-content details > *:not(summary) {
+  margin-top: 12px;
+  color: var(--text-secondary);
+}
+
+/* Botón Flotante de Copiar Código GitHub-Style */
+.editor-workspace__preview-content pre {
+  position: relative;
+}
+
+.code-copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  z-index: 10;
+}
+
+.editor-workspace__preview-content pre:hover .code-copy-btn {
+  opacity: 1;
+}
+
+.code-copy-btn:hover {
+  background-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.code-copy-btn--success {
+  color: var(--success) !important;
+  border-color: var(--success) !important;
+}
+

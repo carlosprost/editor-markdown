@@ -1,10 +1,11 @@
 {
   "name": "editor-markdown",
   "version": "1.0.0",
-  "description": "Editor de markdown",
+  "description": "Editor de markdown premium de nivel comercial con visor interactivo colapsable",
   "main": "app.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +14,32 @@
     "electron": "^29.1.0",
     "electron-reload": "^2.0.0-alpha.1",
     "marked": "^12.0.1"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.carlosprost.editormarkdown",
+    "productName": "EditorMarkdown",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "src/assets/icon.png",
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Editor Markdown"
+    },
+    "files": [
+      "src/**/*",
+      "app.js",
+      "windows.js",
+      "package.json"
+    ]
   }
 }
-

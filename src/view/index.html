@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;" />
     <link
       rel="stylesheet"
       href="../../node_modules/bootstrap-icons/font/bootstrap-icons.css"
@@ -10,47 +11,70 @@
     <link rel="stylesheet" href="./style.css" />
     <title>Editor Markdown</title>
   </head>
-  <body>
-    <header>
-      <section class="top-bar">
-        <div class="left-section">
-            <div class="logo"></div>
-            <nav class="comandos">
-              <button type="button" id="new" title="New File"><i class="bi bi-file-earmark-plus"></i></button>
-              <button type="button" id="open" title="Open File"><i class="bi bi-folder2-open"></i></button>
-              <button type="button" id="save" title="Save"><i class="bi bi-floppy"></i></button>
-              <button type="button" id="save-as" title="Save As"><i class="bi bi-floppy2-fill"></i></button>
-              <button type="button" id="close-file" title="Close File"><i class="bi bi-x-square"></i></button>
-            </nav>
+  <body class="editor-app">
+    <header class="editor-header">
+      <section class="editor-header__bar">
+        <div class="editor-header__section editor-header__section--left">
+          <div class="editor-header__logo" aria-label="Logo Markdown"></div>
+          <nav class="editor-header__actions">
+            <button type="button" id="new" class="editor-header__action-btn" title="Nuevo archivo">
+              <i class="bi bi-file-earmark-plus"></i>
+            </button>
+            <button type="button" id="open" class="editor-header__action-btn" title="Abrir archivo">
+              <i class="bi bi-folder2-open"></i>
+            </button>
+            <button type="button" id="save" class="editor-header__action-btn" title="Guardar archivo">
+              <i class="bi bi-floppy"></i>
+            </button>
+            <button type="button" id="save-as" class="editor-header__action-btn" title="Guardar como">
+              <i class="bi bi-floppy2-fill"></i>
+            </button>
+            <button type="button" id="close-file" class="editor-header__action-btn" title="Cerrar archivo">
+              <i class="bi bi-x-square"></i>
+            </button>
+            <button type="button" id="export" class="editor-header__action-btn" title="Exportar como HTML">
+              <i class="bi bi-filetype-html"></i>
+            </button>
+            <button type="button" id="toggle-view" class="editor-header__action-btn" title="Modo Visor (Colapsar editor)">
+              <i class="bi bi-eye"></i>
+            </button>
+          </nav>
         </div>
         
-        <div class="center-section">
-            <div class="titulo" draggable="true">
-                <h3 id="titulo">Archivo sin nombre</h3>
-            </div>
+        <div class="editor-header__section editor-header__section--center">
+          <div class="editor-header__title-container" draggable="true">
+            <h3 id="titulo" class="editor-header__title">Archivo sin nombre</h3>
+          </div>
         </div>
 
-        <div class="right-section">
-            <div class="btn-close">
-                <button id="min"><i class="bi bi-dash-lg"></i></button>
-                <button id="max"><i class="bi bi-square"></i></button>
-                <button id="unmax" style="display: none"><i class="bi bi-back"></i></button>
-                <button id="close"><i class="bi bi-x-lg"></i></button>
-            </div>
+        <div class="editor-header__section editor-header__section--right">
+          <div class="editor-header__window-controls">
+            <button id="min" class="editor-header__control-btn" title="Minimizar">
+              <i class="bi bi-dash-lg"></i>
+            </button>
+            <button id="max" class="editor-header__control-btn" title="Maximizar">
+              <i class="bi bi-square"></i>
+            </button>
+            <button id="unmax" class="editor-header__control-btn" style="display: none" title="Restaurar">
+              <i class="bi bi-back"></i>
+            </button>
+            <button id="close" class="editor-header__control-btn editor-header__control-btn--close" title="Cerrar">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
         </div>
       </section>
     </header>
-    <main>
-      <section class="principal">
-        <section class="editor">
-          <textarea name="editor" id="editor"></textarea>
-        </section>
-        <section class="preview">
-          <div id="preview"></div>
-        </section>
+    <main class="editor-workspace">
+      <section class="editor-workspace__panel editor-workspace__panel--editor">
+        <textarea name="editor" id="editor" class="editor-workspace__textarea" placeholder="Escribí tu Markdown acá..."></textarea>
+      </section>
+      <section class="editor-workspace__panel editor-workspace__panel--preview">
+        <div id="preview" class="editor-workspace__preview-content"></div>
       </section>
     </main>
 
     <script src="./script.js"></script>
   </body>
 </html>
+
