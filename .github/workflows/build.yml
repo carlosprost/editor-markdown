@@ -36,6 +36,8 @@ jobs:
         with:
           files: |
             dist/*.exe
+            dist/*.appx
+            dist/*.msix
             dist/*.blockmap
           draft: false
           prerelease: false

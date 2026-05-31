@@ -19,7 +19,7 @@
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "appId": "ar.com.wolftei.editormarkdown",
+    "appId": "ar.com.wolfTei.editormarkdown",
     "productName": "WolfTeI.EditorMarkdown",
     "artifactName": "${productName}_${version}.${ext}",
     "directories": {
