@@ -38,7 +38,7 @@
       "createStartMenuShortcut": true,
       "shortcutName": "Editor Markdown"
     },
-    "msix": {
+    "appx": {
       "identityName": "WolfTel.EditorMarkdown",
       "publisher": "CN=9FA1EC2E-07E2-4B86-BAD0-4F3B9AAD28B8",
       "publisherDisplayName": "WolfTel",
