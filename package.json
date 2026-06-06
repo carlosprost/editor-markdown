@@ -1,6 +1,6 @@
 {
   "name": "editor-markdown",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Editor de markdown premium de nivel comercial con visor interactivo colapsable",
   "main": "app.js",
   "scripts": {
