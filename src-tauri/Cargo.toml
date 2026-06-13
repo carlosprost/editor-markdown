@@ -1,0 +1,44 @@
+[package]
+name = "editor-markdown"
+version = "2.0.0"
+description = "Editor de Markdown premium con visor interactivo colapsable - WolfTeI"
+authors = ["WolfTeI"]
+edition = "2021"
+
+# ============================================================
+# Perfil de release optimizado para producción
+# Reduce el tamaño del binario con LTO y strip de símbolos
+# ============================================================
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
+
+[lib]
+name = "editor_markdown_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# Framework principal de la aplicación de escritorio
+tauri = { version = "2", features = [] }
+
+# Plugins oficiales de Tauri V2
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-shell = "2"
+
+# Parser de Markdown con soporte GFM (GitHub Flavored Markdown)
+# Reemplaza la librería 'marked' de Node.js
+pulldown-cmark = { version = "0.11", features = ["html"] }
+
+# Motor de expresiones regulares para sanitización de HTML y procesamiento de alertas
+regex = "1"
+
+# Serialización / Deserialización para la comunicación IPC con el frontend
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

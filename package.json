@@ -1,59 +1,22 @@
 {
   "name": "editor-markdown",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Editor de markdown premium de nivel comercial con visor interactivo colapsable",
-  "main": "app.js",
   "scripts": {
-    "start": "electron .",
-    "dist": "electron-builder"
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "tauri": "tauri"
   },
   "author": "WolfTeI",
   "license": "ISC",
   "dependencies": {
-    "bootstrap-icons": "^1.11.3",
-    "electron-reload": "^2.0.0-alpha.1",
-    "marked": "^12.0.1"
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
+    "@tauri-apps/plugin-fs": "^2",
+    "@tauri-apps/plugin-shell": "^2",
+    "bootstrap-icons": "^1.13.1"
   },
   "devDependencies": {
-    "electron": "^29.1.0",
-    "electron-builder": "^24.13.3"
-  },
-  "build": {
-    "appId": "ar.com.WolfTeI.EditorMarkdown",
-    "productName": "WolfTeI.EditorMarkdown",
-    "artifactName": "${productName}_${version}.${ext}",
-    "directories": {
-      "output": "dist"
-    },
-    "win": {
-      "icon": "src/assets/icon.png",
-      "target": [
-        "nsis",
-        "appx"
-      ]
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "Editor Markdown"
-    },
-    "appx": {
-      "identityName": "WolfTeI.EditorMarkdown",
-      "publisher": "CN=9FA1EC2E-07E2-4B86-BAD0-4F3B9AAD28B8",
-      "publisherDisplayName": "WolfTeI",
-      "displayName": "EditorMarkdown",
-      "showNameOnTiles": true,
-      "languages": [
-        "es-ES"
-      ]
-    },
-    "files": [
-      "src/**/*",
-      "app.js",
-      "windows.js",
-      "package.json"
-    ]
+    "@tauri-apps/cli": "^2"
   }
 }

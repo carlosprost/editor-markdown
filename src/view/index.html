@@ -3,17 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;" />
-    <link
-      rel="stylesheet"
-      href="../../node_modules/bootstrap-icons/font/bootstrap-icons.css"
-    />
+    <meta name="description" content="Editor Markdown premium con visor interactivo colapsable - WolfTeI" />
+    <link rel="stylesheet" href="./bootstrap-icons/bootstrap-icons.css" />
     <link rel="stylesheet" href="./style.css" />
     <title>Editor Markdown</title>
   </head>
   <body class="editor-app">
     <header class="editor-header">
-      <section class="editor-header__bar">
+      <section class="editor-header__bar" data-tauri-drag-region>
         <div class="editor-header__section editor-header__section--left">
           <div class="editor-header__logo" aria-label="Logo Markdown"></div>
           <nav class="editor-header__actions">
@@ -42,7 +39,7 @@
         </div>
         
         <div class="editor-header__section editor-header__section--center">
-          <div class="editor-header__title-container" draggable="true">
+          <div class="editor-header__title-container">
             <h3 id="titulo" class="editor-header__title">Archivo sin nombre</h3>
           </div>
         </div>
@@ -77,4 +74,3 @@
     <script src="./script.js"></script>
   </body>
 </html>
-

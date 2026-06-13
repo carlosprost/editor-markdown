@@ -1,4 +1,4 @@
-name: Compilar y Lanzar Release (CI/CD)
+name: Compilar y Lanzar Release (CI/CD Tauri)
 
 on:
   push:
@@ -22,24 +22,21 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Instalar Dependencias
-        run: npm ci
+      - name: Instalar Dependencias de Node
+        run: npm install
 
-      - name: Compilar la Aplicación con Electron Builder
-        run: npm run dist
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Crear Release y Subir Instalador
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Configurar Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          files: |
-            dist/*.exe
-            dist/*.appx
-            dist/*.msix
-            dist/*.blockmap
-          draft: false
-          prerelease: false
+          targets: x86_64-pc-windows-msvc
+
+      - name: Compilar la Aplicación con Tauri y Crear Release
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }} # Toma el nombre del tag (ej. v1.0.0)
+          releaseName: "Release ${{ github.ref_name }}"
+          releaseBody: "Nueva versión compilada automáticamente con Tauri V2."
+          releaseDraft: false
+          prerelease: false
