@@ -1,4 +1,4 @@
-# 💎 Editor de Markdown Premium (v1.0.0)
+# 💎 Editor de Markdown Premium (v2.1.0)
 
 ¡Qué hacés! Te damos la bienvenida al **Editor de Markdown Premium**, un editor e intérprete interactivo de alto rendimiento desarrollado en **Electron** (HTML/CSS/JS Vanilla). 
 
@@ -33,6 +33,7 @@ Esta aplicación fue refactorizada a nivel comercial para ofrecer una experienci
     *   `Ctrl + N` -> Crear nuevo archivo limpio.
 *   **Arrastrar y Soltar (Drag & Drop):** Podés arrastrar cualquier archivo `.md` desde tu explorador de Windows y soltarlo directamente en la app para abrirlo al instante.
 *   **Exportación Premium a HTML:** Botón nativo de exportación que compila y empaqueta tu Markdown en un archivo `.html` físico completo con las variables de colores, fuentes tipográficas y todo el set de estilos del tema oscuro de la aplicación.
+*   **Exportación Limpia a PDF:** Botón nativo para guardar e imprimir el documento renderizado en PDF, con estilos especializados (`@media print`) para ocultar la interfaz, formatear el ancho de página en papel y preservar los resaltados de código.
 *   **Doble Clic Reactivo (Maximización del SO):** El backend escucha de forma nativa los eventos del sistema operativo (`maximize` y `unmaximize`) para mantener sincronizados al instante los iconos de maximizar y restaurar de la ventana, incluso si hacés doble clic en la barra de título personalizada.
 
 ---

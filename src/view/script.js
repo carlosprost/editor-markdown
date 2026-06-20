@@ -182,6 +182,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     await invoke("exportar_html", { htmlContent: preview.innerHTML });
   });
 
+  document.querySelector("#export-pdf").addEventListener("click", () => {
+    if (estaDeshabilitadoEditor()) return;
+    window.print();
+  });
+
   document.querySelector("#toggle-view").addEventListener("click", () => {
     if (estaDeshabilitadoEditor()) return;
     const panelEditor = document.querySelector(".editor-workspace__panel--editor");

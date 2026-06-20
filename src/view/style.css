@@ -513,4 +513,62 @@ body {
   color: var(--success) !important;
   border-color: var(--success) !important;
 }
+
+/* ==========================================================================
+   Estilos de Impresión (Exportar a PDF)
+   ========================================================================== */
+@media print {
+  /* Ocultar barra de título y paneles irrelevantes */
+  .editor-header,
+  .editor-workspace__panel--editor,
+  .code-copy-btn {
+    display: none !important;
+  }
+
+  /* Resetear dimensiones de layout para permitir que el PDF crezca en múltiples páginas */
+  body, 
+  .editor-workspace, 
+  .editor-workspace__panel--preview {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* Estilizar el contenido a papel (Fondo blanco, texto negro) */
+  body {
+    background-color: white !important;
+  }
+
+  .editor-workspace__panel--preview {
+    padding: 0 !important;
+    background-color: white !important;
+    width: 100% !important;
+  }
+
+  .editor-workspace__preview-content {
+    color: black !important;
+  }
+
+  /* Forzar color de texto negro para legibilidad */
+  .editor-workspace__preview-content h1, 
+  .editor-workspace__preview-content h2, 
+  .editor-workspace__preview-content h3, 
+  .editor-workspace__preview-content h4, 
+  .editor-workspace__preview-content h5, 
+  .editor-workspace__preview-content h6,
+  .editor-workspace__preview-content p,
+  .editor-workspace__preview-content li,
+  .editor-workspace__preview-content table {
+    color: black !important;
+  }
+
+  .editor-workspace__preview-content pre {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+  }
+
+  .editor-workspace__preview-content pre code {
+    color: #212529 !important;
+  }
+}
 
