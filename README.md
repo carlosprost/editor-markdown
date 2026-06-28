@@ -1,8 +1,15 @@
 # 💎 Editor de Markdown (v2.1.2)
 
+<a href="ms-windows-store://pdp/?productid=9PC8MCBSJ2HJ">
+  <img src="https://img.shields.io/badge/Disponible_en-Microsoft_Store-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Disponible en Microsoft Store"/>
+</a>
+
+
 ¡Qué hacés! Te damos la bienvenida al **Editor de Markdown**, un editor e intérprete interactivo de alto rendimiento desarrollado en **Tauri V2** (Rust + HTML/CSS/JS Vanilla). 
 
 Esta aplicación fue refactorizada a nivel comercial para ofrecer una experiencia de usuario (UX) sumamente fluida y moderna, inspirándose en las mejores prácticas de herramientas líderes del mercado como **Notion, Obsidian y GitHub**, todo blindado bajo estándares de ciberseguridad industrial.
+
+![Vista Previa del Editor Markdown](assets/preview.png)
 
 ---
 
