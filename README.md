@@ -72,16 +72,6 @@ El instalador resultante y el software portable quedarán alojados en el directo
 
 ---
 
-## 📦 Pipeline de CI/CD (GitHub Actions)
-
-El proyecto cuenta con un flujo automatizado de integración y distribución continuas (`.github/workflows/build.yml`). 
-
-Cuando creás y subís un **tag de versión** (ej. `v1.0.0`) al repositorio:
-1.  GitHub Actions levanta de forma automatizada una máquina virtual de Windows Server.
-2.  Instala las dependencias y compila el instalador nativo portable de la app mediante **Tauri CLI**.
-3.  **Crea automáticamente un Release oficial en GitHub** y sube como asset el ejecutable `.exe` para que los usuarios finales puedan descargarlo directamente.
-
----
 
 ## 🔒 Reporte de Seguridad
 
