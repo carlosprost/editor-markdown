@@ -358,6 +358,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       await guardarComo(ruta);
     }
     if (comprobarCambios()) titulo.innerHTML = obtenerFileName();
+    if (typeof window.incrementarGuardadosRating === "function") {
+      window.incrementarGuardadosRating();
+    }
   }
 
   async function ejecutarAperturaCompleta() {
@@ -408,22 +411,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // 2. Drag & Drop de archivos .md
+  // 2. Drag & Drop de archivos .md (Tauri V2 Nativo)
   window.addEventListener("dragover", (e) => { e.preventDefault(); e.stopPropagation(); });
-  window.addEventListener("drop", async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      if (file.name.split(".").pop().toLowerCase() === "md") {
-        if (estaDeshabilitadoEditor()) habilitarEditor();
-        const rutaFile = file.path || "";
-        if (rutaFile) await cargarArchivoAbierto(rutaFile);
-      } else {
-        await invoke("mostrar_error", {
-          titulo: "Archivo no soportado",
-          mensaje: "Por favor, arrastrá únicamente archivos con extensión .md, che."
-        });
+  window.addEventListener("drop", (e) => { e.preventDefault(); e.stopPropagation(); });
+
+  ventana.onDragDropEvent(async (event) => {
+    if (event.payload.type === 'drop') {
+      const paths = event.payload.paths;
+      if (paths && paths.length > 0) {
+        const rutaFile = paths[0];
+        if (rutaFile.split(".").pop().toLowerCase() === "md") {
+          if (estaDeshabilitadoEditor()) habilitarEditor();
+          await cargarArchivoAbierto(rutaFile);
+        } else {
+          await invoke("mostrar_error", {
+            titulo: "Archivo no soportado",
+            mensaje: "Por favor, arrastrá únicamente archivos con extensión .md, che."
+          });
+        }
       }
     }
   });
@@ -444,5 +449,66 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Arranque de la aplicación
   // ============================================================
   await iniciarPrograma();
+
+  // ============================================================
+  // Lógica del Modal de Votación (Store)
+  // ============================================================
+  const storeModal = document.getElementById("store-rating-modal");
+  const btnVote = document.getElementById("store-modal-vote");
+  const btnCloseModal = document.getElementById("store-modal-close");
+  let hasVoted = window.localStorage.getItem("hasVoted") === "true";
+  let saveCount = parseInt(window.localStorage.getItem("saveCount") || "0", 10);
+  let ratingTimeout;
+
+  window.incrementarGuardadosRating = function() {
+    if (hasVoted) return;
+    saveCount++;
+    window.localStorage.setItem("saveCount", saveCount.toString());
+    if (saveCount % 3 === 0) {
+      if (ratingTimeout) clearTimeout(ratingTimeout);
+      mostrarModalRating();
+    }
+  };
+
+  function mostrarModalRating() {
+    if (hasVoted || !storeModal) return;
+    storeModal.style.display = "flex";
+    setTimeout(() => storeModal.classList.add("active"), 10);
+  }
+
+  function ocultarModalRating() {
+    if (!storeModal) return;
+    storeModal.classList.remove("active");
+    setTimeout(() => { storeModal.style.display = "none"; }, 300);
+  }
+
+  if (!hasVoted) {
+    // A los 5 minutos salta si no se llegó a los 3 guardados
+    ratingTimeout = setTimeout(() => {
+      mostrarModalRating();
+    }, 5 * 60 * 1000);
+  }
+
+  if (btnVote) {
+    btnVote.addEventListener("click", async () => {
+      hasVoted = true;
+      window.localStorage.setItem("hasVoted", "true");
+      ocultarModalRating();
+      try {
+        await invoke("plugin:shell|open", { path: "ms-windows-store://review/?ProductId=9PC8MCBSJ2HJ" });
+      } catch (err) {
+        console.error("Error al abrir la store: ", err);
+      }
+    });
+  }
+
+  if (btnCloseModal) {
+    btnCloseModal.addEventListener("click", () => {
+      ocultarModalRating();
+      // Reiniciamos el contador para que vuelva a salir a los 3 próximos guardados
+      saveCount = 0;
+      window.localStorage.setItem("saveCount", "0");
+    });
+  }
 
 }); // fin DOMContentLoaded

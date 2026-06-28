@@ -571,4 +571,102 @@ body {
     color: #212529 !important;
   }
 }
-
+
+/* ==========================================================================
+   MODAL DE VOTACIÓN STORE (GLASSMORPHISM)
+   ========================================================================== */
+.store-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.store-modal.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.store-modal__content {
+  background: rgba(30, 32, 38, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 30px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.store-modal.active .store-modal__content {
+  transform: translateY(0);
+}
+
+.store-modal__icon {
+  font-size: 40px;
+  color: #ffc107;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.store-modal__title {
+  color: #fff;
+  font-size: 18px;
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+.store-modal__text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.store-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.store-modal__btn {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.store-modal__btn--primary {
+  background: linear-gradient(135deg, #0078d4, #00a4ef);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
+}
+
+.store-modal__btn--primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.store-modal__btn--secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.store-modal__btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}

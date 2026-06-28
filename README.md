@@ -1,4 +1,4 @@
-# 💎 Editor de Markdown (v2.1.0)
+# 💎 Editor de Markdown (v2.1.2)
 
 ¡Qué hacés! Te damos la bienvenida al **Editor de Markdown**, un editor e intérprete interactivo de alto rendimiento desarrollado en **Tauri V2** (Rust + HTML/CSS/JS Vanilla). 
 
@@ -20,7 +20,7 @@ Esta aplicación fue refactorizada a nivel comercial para ofrecer una experienci
 
 ### 💎 Características Markdown Extendidas
 *   **Texto Resaltado (`==resaltado==` - Obsidian Style):** Convierte tus marcas en etiquetas `<mark>` con un fondo fluorescente de tono ámbar sutil muy legible en modo oscuro. Está protegido para no alterar operadores lógicos `==` dentro de bloques de código.
-*   **Emojis Shortcodes (`:rocket:` -> 🚀 - Slack/GitHub Style):** Soporte integrado para 25 de los shortcodes de emojis más populares, interpretados de manera dinámica antes de inyectar en el DOM.
+*   **Emojis Shortcodes (`:rocket:` -> 🚀 - Slack/GitHub Style):** Soporte integrado para 25 de los shortcodes de emojis más populares, interpretados de manera dinámica antes de inyectar en el DOM. *(Nota: Siempre deben ir encerrados entre dos puntos, por ejemplo `:bug:`)*.
 *   **Botón Flotante "Copiar Código" (GitHub Style):** Inyecta botones interactivos de copia flotante (`bi-copy`) sobre todos los bloques `<pre>`. Copia asíncronamente al portapapeles y te da feedback visual de éxito verde temporal por 2 segundos.
 *   **Checklists Reactivas Bidireccionales (Obsidian Style):** Los checkboxes en el preview se habilitan nativamente. Al alternar un checkbox en el preview, se busca de forma secuencial y exacta la línea correspondiente en el editor y se actualiza de `- [ ]` a `- [x]` (o viceversa) en tiempo real.
 *   **Acordeones Colapsables (Notion Style):** Soporte y estilización interactiva de las etiquetas nativas `<details>` y `<summary>` con flechas de rotación suave animadas y bordes definidos.

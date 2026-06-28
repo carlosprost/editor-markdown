@@ -1,6 +1,6 @@
 [package]
 name = "editor-markdown"
-version = "2.1.0"
+version = "2.1.2"
 description = "Editor de Markdown con visor interactivo colapsable - WolfTeI"
 authors = ["WolfTeI"]
 edition = "2021"
