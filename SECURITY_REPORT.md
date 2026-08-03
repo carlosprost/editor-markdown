@@ -49,6 +49,7 @@ Tauri restringe lo que el frontend puede hacer incluso usando los plugins oficia
 
 ### Prevención de Inyecciones (OWASP A03)
 *   **Path Traversal & Inyecciones FS:** El frontend rara vez manipula rutas directamente; el 90% de las operaciones de FS (File System) se dirigen mediante el diálogo nativo instanciado en Rust. Las operaciones son a nivel local, sin uso de sentencias SQL, erradicando inyecciones de BD.
+*   **Argument Injection (Apertura CLI / Doble Clic):** La captura de rutas pasadas por el sistema operativo (`obtener_archivo_inicio`) valida estrictamente que no sean flags (`--`, `-`), comprueba que el archivo exista en disco mediante `Path::is_file()` y exige que la extensión sea exclusivamente `.md` o `.markdown`, bloqueando cualquier vector de inyección de parámetros.
 
 ### Prevención de XSS (Cross-Site Scripting)
 *   El renderizado Markdown -> HTML es el mayor vector de ataque potencial.
@@ -66,5 +67,6 @@ Tauri restringe lo que el frontend puede hacer incluso usando los plugins oficia
 | :--- | :--- | :--- |
 | **A01: Broken Access Control** | Manipulación no autorizada del sistema. | **Aislamiento por IPC:** El frontend web no tiene privilegios de SO. Todo se canaliza por `invoke` de Tauri. |
 | **A03: Injection (XSS)** | Inyección de JavaScript vía documentos `.md`. | **Sanitización Rust:** Limpieza agresiva de scripts y handlers antes de renderizar el DOM del webview. |
+| **A03: Injection (CLI / Arguments)** | Inyección de argumentos y lectura arbitraria en arranque. | **Validación en Rust:** Filtrado estricto de flags, validación de existencia en disco y lista blanca de extensiones (`.md`, `.markdown`). |
 | **A06: Vulnerable and Outdated Components** | Uso de librerías JS antiguas vulnerables. | **Migración a Tauri V2:** Reemplazo de Electron y Node.js local por binarios nativos de Rust altamente auditados. |
 | **A04: Insecure Design** | Filtrado de rutas del sistema y stack traces. | **Rust Result/Error Handling:** Los errores (`Result::Err`) se mapean en strings genéricas en el `mostrar_error` sin fugar rutas internas al JS. |

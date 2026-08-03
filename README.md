@@ -1,4 +1,4 @@
-# 💎 Editor de Markdown (v2.1.2)
+# 💎 Editor de Markdown (v2.1.3)
 
 <a href="ms-windows-store://pdp/?productid=9PC8MCBSJ2HJ">
   <img src="https://img.shields.io/badge/Disponible_en-Microsoft_Store-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Disponible en Microsoft Store"/>
@@ -33,6 +33,7 @@ Esta aplicación fue refactorizada a nivel comercial para ofrecer una experienci
 *   **Acordeones Colapsables (Notion Style):** Soporte y estilización interactiva de las etiquetas nativas `<details>` y `<summary>` con flechas de rotación suave animadas y bordes definidos.
 
 ### 💾 Productividad y UX de Alto Rango
+*   **Asociación Nativa en Windows y Doble Clic:** Al instalar la app, se asocian automáticamente las extensiones `.md` y `.markdown` en el Registro de Windows. Hacer doble clic sobre un archivo Markdown o usar el menú contextual *"Abrir con..."* abre directamente su contenido en el editor.
 *   **Atajos de Teclado Globales:** Shortcuts asíncronos de productividad para agilizar el trabajo:
     *   `Ctrl + S` -> Guardar archivo de forma directa.
     *   `Ctrl + Shift + S` -> Guardar como...
