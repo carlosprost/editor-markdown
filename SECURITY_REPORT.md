@@ -29,6 +29,7 @@ El frontend en JavaScript interactúa con el sistema operativo invocando comando
 | `guardar_archivo` | Privado / Local | Recibe una ruta validada previamente y el contenido a guardar. Se usa para operaciones directas (`Ctrl+S`). |
 | `guardar_como` | Privado / Local | Abre un diálogo nativo de guardado restringido a `.md`. Evita la inyección de nombres de archivos ejecutables (`.exe`, `.bat`). |
 | `exportar_html` | Privado / Local | Igual que `guardar_como` pero restringido a archivos `.html`. |
+| `obtener_archivo_inicio` | Privado / Local | Captura argumentos CLI (`std::env::args()`) al iniciar la app. Valida que el archivo exista y que su extensión sea estrictamente `.md` o `.markdown`, previniendo inyecciones de comandos o lectura arbitraria de archivos del sistema. |
 | `dialogo_sin_guardar` | Privado / Local | Abre un `MessageDialog` nativo (Yes/No/Cancel) desde el backend para confirmaciones críticas sin bloquear el hilo de la UI web. |
 | `mostrar_error` | Privado / Local | Dispara mensajes de error genéricos controlados, evitando filtrar Stack Traces al usuario final. |
 | `parsear_markdown` | Privado / Local | Envía el texto crudo a Rust, lo procesa con `pulldown-cmark`, lo sanitiza de XSS y lo devuelve. Toda la carga criptográfica y validación recae en el backend seguro de Rust. |

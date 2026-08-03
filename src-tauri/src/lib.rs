@@ -3,7 +3,10 @@
 /// Permite que Tauri compile el backend como librería reutilizable.
 mod commands;
 
-use commands::archivos::{abrir_archivo, exportar_html, guardar_archivo, guardar_como, leer_archivo};
+use commands::archivos::{
+    abrir_archivo, exportar_html, guardar_archivo, guardar_como, leer_archivo,
+    obtener_archivo_inicio,
+};
 use commands::dialogos::{dialogo_sin_guardar, mostrar_error};
 use commands::markdown::parsear_markdown;
 
@@ -24,6 +27,7 @@ pub fn run() {
             guardar_archivo,
             guardar_como,
             exportar_html,
+            obtener_archivo_inicio,
             // Comandos de Markdown
             parsear_markdown,
             // Comandos de diálogos

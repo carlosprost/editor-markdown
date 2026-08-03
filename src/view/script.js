@@ -25,10 +25,27 @@ document.addEventListener("DOMContentLoaded", async () => {
      ========================================================================== */
 
   /**
-   * Arranca la aplicación chequeando si tenías un archivo abierto en tu sesión anterior.
+   * Arranca la aplicación chequeando si se abrió un archivo desde Windows (doble clic o CLI)
+   * o si tenías un archivo abierto en tu sesión anterior.
    * @async
    */
   async function iniciarPrograma() {
+    // 1. Verificar si Windows nos pasó un archivo por parámetro (doble clic / Abrir con...)
+    try {
+      const archivoInicial = await invoke("obtener_archivo_inicio");
+      if (archivoInicial) {
+        habilitarEditor();
+        guardarRuta(archivoInicial.ruta, archivoInicial.nombre);
+        titulo.innerHTML = archivoInicial.nombre;
+        editor.value = archivoInicial.contenido;
+        await convertMarkdown(archivoInicial.contenido);
+        return;
+      }
+    } catch (err) {
+      console.warn("No se pudo obtener el archivo inicial de inicio:", err);
+    }
+
+    // 2. Si no vino archivo por CLI, restaurar la última sesión o ir al inicio
     const ruta = obtenerRuta();
     if (!ruta) {
       pantallaDeInicio();
