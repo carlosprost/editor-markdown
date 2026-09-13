@@ -1,38 +1,65 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="slate">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Editor Markdown premium con visor interactivo colapsable - WolfTeI" />
+    <meta name="description" content="Editor Markdown v2.3.0 con Modo Presentación, Modo Enfoque Zen, estadísticas y temas PRO - WolfTeI" />
     <link rel="stylesheet" href="./bootstrap-icons/bootstrap-icons.css" />
     <link rel="stylesheet" href="./style.css" />
     <title>Editor Markdown</title>
   </head>
   <body class="editor-app">
+    <!-- Header Principal -->
     <header class="editor-header">
       <section class="editor-header__bar" data-tauri-drag-region>
         <div class="editor-header__section editor-header__section--left">
           <div class="editor-header__logo" aria-label="Logo Markdown"></div>
-          <nav class="editor-header__actions">
-            <button type="button" id="new" class="editor-header__action-btn" title="Nuevo archivo">
+          <nav class="editor-header__actions" aria-label="Acciones de archivo">
+            <button type="button" id="new" class="editor-header__action-btn" title="Nuevo archivo (Ctrl+N)">
               <i class="bi bi-file-earmark-plus"></i>
             </button>
-            <button type="button" id="open" class="editor-header__action-btn" title="Abrir archivo">
+            <button type="button" id="open" class="editor-header__action-btn" title="Abrir archivo (Ctrl+O)">
               <i class="bi bi-folder2-open"></i>
             </button>
-            <button type="button" id="save" class="editor-header__action-btn" title="Guardar archivo">
+            <button type="button" id="save" class="editor-header__action-btn" title="Guardar archivo (Ctrl+S)">
               <i class="bi bi-floppy"></i>
             </button>
-            <button type="button" id="save-as" class="editor-header__action-btn" title="Guardar como">
+            <button type="button" id="save-as" class="editor-header__action-btn" title="Guardar como (Ctrl+Shift+S)">
               <i class="bi bi-floppy2-fill"></i>
             </button>
-            <button type="button" id="close-file" class="editor-header__action-btn" title="Cerrar archivo">
+            <button type="button" id="close-file" class="editor-header__action-btn" title="Cerrar archivo actual">
               <i class="bi bi-x-square"></i>
             </button>
+            
+            <div class="editor-header__separator"></div>
+
+            <button type="button" id="btn-templates" class="editor-header__action-btn" title="Plantillas de inicio rápido">
+              <i class="bi bi-layout-text-window-reverse"></i>
+            </button>
+            <button type="button" id="btn-find-replace" class="editor-header__action-btn" title="Buscar y reemplazar (Ctrl+F)">
+              <i class="bi bi-search"></i>
+            </button>
+            <button type="button" id="btn-theme" class="editor-header__action-btn" title="Cambiar tema visual">
+              <i class="bi bi-palette"></i>
+            </button>
+
+            <div class="editor-header__separator"></div>
+
+            <button type="button" id="btn-slideshow" class="editor-header__action-btn editor-header__action-btn--pro-feature" title="Modo Presentación Diapositivas (PRO)">
+              <i class="bi bi-easel"></i>
+              <span class="pro-tag">PRO</span>
+            </button>
+            <button type="button" id="btn-zen" class="editor-header__action-btn editor-header__action-btn--pro-feature" title="Modo Enfoque Zen (PRO)">
+              <i class="bi bi-bullseye"></i>
+              <span class="pro-tag">PRO</span>
+            </button>
+
+            <div class="editor-header__separator"></div>
+
             <button type="button" id="export" class="editor-header__action-btn" title="Exportar como HTML">
               <i class="bi bi-filetype-html"></i>
             </button>
-            <button type="button" id="export-pdf" class="editor-header__action-btn" title="Exportar como PDF">
+            <button type="button" id="export-pdf" class="editor-header__action-btn" title="Exportar como PDF (Imprimir)">
               <i class="bi bi-filetype-pdf"></i>
             </button>
             <button type="button" id="toggle-view" class="editor-header__action-btn" title="Modo Visor (Colapsar editor)">
@@ -48,6 +75,12 @@
         </div>
 
         <div class="editor-header__section editor-header__section--right">
+          <!-- Botón Badge PRO -->
+          <button type="button" id="btn-pro" class="editor-header__pro-btn" title="Desbloquear Editor Markdown PRO">
+            <i class="bi bi-gem"></i>
+            <span id="pro-btn-text">👑 Pasar a PRO</span>
+          </button>
+
           <div class="editor-header__window-controls">
             <button id="min" class="editor-header__control-btn" title="Minimizar">
               <i class="bi bi-dash-lg"></i>
@@ -65,14 +98,408 @@
         </div>
       </section>
     </header>
+
+    <!-- Barra de Formato Rápido Markdown (Toolbar) -->
+    <section class="editor-toolbar" id="editor-toolbar" aria-label="Herramientas de formato">
+      <div class="editor-toolbar__group">
+        <button type="button" id="tool-bold" class="editor-toolbar__btn" title="Negrita (**texto**)">
+          <i class="bi bi-type-bold"></i>
+        </button>
+        <button type="button" id="tool-italic" class="editor-toolbar__btn" title="Cursiva (*texto*)">
+          <i class="bi bi-type-italic"></i>
+        </button>
+        <button type="button" id="tool-strikethrough" class="editor-toolbar__btn" title="Tachado (~~texto~~)">
+          <i class="bi bi-type-strikethrough"></i>
+        </button>
+        <button type="button" id="tool-highlight" class="editor-toolbar__btn" title="Resaltado (==texto==)">
+          <i class="bi bi-highlighter"></i>
+        </button>
+      </div>
+
+      <div class="editor-toolbar__separator"></div>
+
+      <div class="editor-toolbar__group">
+        <button type="button" id="tool-h1" class="editor-toolbar__btn editor-toolbar__btn--text" title="Título 1 (#)">H1</button>
+        <button type="button" id="tool-h2" class="editor-toolbar__btn editor-toolbar__btn--text" title="Título 2 (##)">H2</button>
+        <button type="button" id="tool-h3" class="editor-toolbar__btn editor-toolbar__btn--text" title="Título 3 (###)">H3</button>
+      </div>
+
+      <div class="editor-toolbar__separator"></div>
+
+      <div class="editor-toolbar__group">
+        <button type="button" id="tool-quote" class="editor-toolbar__btn" title="Cita (> texto)">
+          <i class="bi bi-quote"></i>
+        </button>
+        <button type="button" id="tool-code" class="editor-toolbar__btn" title="Código en línea (`código`)">
+          <i class="bi bi-code"></i>
+        </button>
+        <button type="button" id="tool-code-block" class="editor-toolbar__btn" title="Bloque de código (```)">
+          <i class="bi bi-code-square"></i>
+        </button>
+      </div>
+
+      <div class="editor-toolbar__separator"></div>
+
+      <div class="editor-toolbar__group">
+        <button type="button" id="tool-ul" class="editor-toolbar__btn" title="Lista con viñetas (- elemento)">
+          <i class="bi bi-list-ul"></i>
+        </button>
+        <button type="button" id="tool-ol" class="editor-toolbar__btn" title="Lista numerada (1. elemento)">
+          <i class="bi bi-list-ol"></i>
+        </button>
+        <button type="button" id="tool-task" class="editor-toolbar__btn" title="Lista de tareas (- [ ] tarea)">
+          <i class="bi bi-check2-square"></i>
+        </button>
+      </div>
+
+      <div class="editor-toolbar__separator"></div>
+
+      <div class="editor-toolbar__group">
+        <button type="button" id="tool-link" class="editor-toolbar__btn" title="Insertar enlace ([texto](url))">
+          <i class="bi bi-link-45deg"></i>
+        </button>
+        <button type="button" id="tool-table" class="editor-toolbar__btn" title="Insertar tabla Markdown">
+          <i class="bi bi-table"></i>
+        </button>
+        <button type="button" id="tool-hr" class="editor-toolbar__btn" title="Línea divisoria (---)">
+          <i class="bi bi-hr"></i>
+        </button>
+      </div>
+
+      <div class="editor-toolbar__separator"></div>
+
+      <div class="editor-toolbar__group">
+        <button type="button" id="tool-alert-note" class="editor-toolbar__btn editor-toolbar__btn--alert-note" title="Alerta [!NOTE]">
+          <i class="bi bi-info-circle"></i>
+        </button>
+        <button type="button" id="tool-alert-tip" class="editor-toolbar__btn editor-toolbar__btn--alert-tip" title="Alerta [!TIP]">
+          <i class="bi bi-lightbulb"></i>
+        </button>
+        <button type="button" id="tool-alert-warn" class="editor-toolbar__btn editor-toolbar__btn--alert-warn" title="Alerta [!WARNING]">
+          <i class="bi bi-exclamation-triangle"></i>
+        </button>
+      </div>
+
+      <div class="editor-toolbar__spacer"></div>
+
+      <div class="editor-toolbar__group">
+        <button type="button" id="tool-sync-scroll" class="editor-toolbar__btn editor-toolbar__btn--active" title="Sincronizar scroll entre editor y visor">
+          <i class="bi bi-arrows-vertical"></i>
+        </button>
+        <button type="button" id="tool-font-decrease" class="editor-toolbar__btn" title="Reducir tamaño de letra (Ctrl + -)">
+          <i class="bi bi-dash"></i>
+        </button>
+        <button type="button" id="tool-font-increase" class="editor-toolbar__btn" title="Aumentar tamaño de letra (Ctrl + +)">
+          <i class="bi bi-plus"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- Barra Flotante de Búsqueda y Reemplazo (Ctrl+F / Ctrl+H) -->
+    <div id="find-replace-panel" class="find-replace" style="display: none;">
+      <div class="find-replace__row">
+        <div class="find-replace__input-wrapper">
+          <i class="bi bi-search find-replace__icon"></i>
+          <input type="text" id="find-input" class="find-replace__input" placeholder="Buscar texto en el documento..." />
+          <span id="find-count" class="find-replace__badge">0 / 0</span>
+        </div>
+        <button type="button" id="find-prev" class="find-replace__btn" title="Coincidencia anterior (Shift+Enter)">
+          <i class="bi bi-chevron-up"></i>
+        </button>
+        <button type="button" id="find-next" class="find-replace__btn" title="Siguiente coincidencia (Enter)">
+          <i class="bi bi-chevron-down"></i>
+        </button>
+        <button type="button" id="toggle-replace-mode" class="find-replace__btn" title="Alternar panel de reemplazo (Ctrl+H)">
+          <i class="bi bi-arrow-left-right"></i>
+        </button>
+        <button type="button" id="find-close" class="find-replace__btn find-replace__btn--close" title="Cerrar búsqueda (Esc)">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div id="replace-row" class="find-replace__row find-replace__row--replace" style="display: none;">
+        <div class="find-replace__input-wrapper">
+          <i class="bi bi-pencil-square find-replace__icon"></i>
+          <input type="text" id="replace-input" class="find-replace__input" placeholder="Reemplazar por..." />
+        </div>
+        <button type="button" id="replace-one" class="find-replace__action-btn">Reemplazar</button>
+        <button type="button" id="replace-all" class="find-replace__action-btn">Todos</button>
+      </div>
+    </div>
+
+    <!-- Espacio Principal de Trabajo -->
     <main class="editor-workspace">
       <section class="editor-workspace__panel editor-workspace__panel--editor">
-        <textarea name="editor" id="editor" class="editor-workspace__textarea" placeholder="Escribí tu Markdown acá..."></textarea>
+        <textarea name="editor" id="editor" class="editor-workspace__textarea" placeholder="Escribí tu Markdown acá... (Arrastrá un archivo .md o seleccioná una plantilla para comenzar)"></textarea>
       </section>
       <section class="editor-workspace__panel editor-workspace__panel--preview">
         <div id="preview" class="editor-workspace__preview-content"></div>
       </section>
     </main>
+
+    <!-- Barra de Estado Inferior (Status Bar) -->
+    <footer class="editor-statusbar" id="status-bar" aria-label="Barra de estado">
+      <div class="editor-statusbar__section editor-statusbar__section--left">
+        <span class="editor-statusbar__item" id="stat-words"><i class="bi bi-fonts"></i> 0 palabras</span>
+        <span class="editor-statusbar__separator"></span>
+        <span class="editor-statusbar__item" id="stat-chars">0 caracteres</span>
+        <span class="editor-statusbar__separator"></span>
+        <span class="editor-statusbar__item" id="stat-lines">0 líneas</span>
+        <span class="editor-statusbar__separator"></span>
+        <span class="editor-statusbar__item" id="stat-reading-time"><i class="bi bi-book"></i> 0 min de lectura</span>
+      </div>
+
+      <div class="editor-statusbar__section editor-statusbar__section--right">
+        <span class="editor-statusbar__item editor-statusbar__item--status" id="stat-save-status">
+          <span class="editor-statusbar__dot editor-statusbar__dot--saved"></span>
+          <span id="stat-save-text">Guardado</span>
+        </span>
+        <span class="editor-statusbar__separator"></span>
+        <span class="editor-statusbar__item" id="stat-theme-name"><i class="bi bi-palette2"></i> Slate Dark</span>
+        <span class="editor-statusbar__separator"></span>
+        <span class="editor-statusbar__item" id="stat-font-size">14px</span>
+        <span class="editor-statusbar__separator"></span>
+        <span class="editor-statusbar__item" id="stat-pro-badge"><span class="badge-free">FREE</span></span>
+        <span class="editor-statusbar__separator"></span>
+        <span class="editor-statusbar__item">UTF-8</span>
+      </div>
+    </footer>
+
+    <!-- Botón Flotante para Salir de Modo Zen -->
+    <button type="button" id="zen-exit-btn" class="zen-exit-pill" style="display: none;" title="Salir del Modo Zen (Esc)">
+      <i class="bi bi-arrows-angle-contract"></i> Salir del Modo Zen (Esc)
+    </button>
+
+    <!-- Overlay de Modo Presentación Diapositivas (Slideshow) -->
+    <div id="slideshow-overlay" class="slideshow-overlay" style="display: none;">
+      <div class="slideshow-header">
+        <span class="slideshow-counter" id="slideshow-counter">Slide 1 / 1</span>
+        <div class="slideshow-controls">
+          <button type="button" id="slideshow-prev" class="slideshow-btn" title="Anterior (←)"><i class="bi bi-chevron-left"></i></button>
+          <button type="button" id="slideshow-next" class="slideshow-btn" title="Siguiente (→)"><i class="bi bi-chevron-right"></i></button>
+          <button type="button" id="slideshow-exit" class="slideshow-btn slideshow-btn--close" title="Salir (Esc)"><i class="bi bi-x-lg"></i></button>
+        </div>
+      </div>
+      <div class="slideshow-body" id="slideshow-body">
+        <div class="slideshow-slide" id="slideshow-content"></div>
+      </div>
+      <div class="slideshow-footer">
+        <span>Presioná <strong>← / →</strong> o <strong>Espacio</strong> para navegar • <strong>Esc</strong> para salir</span>
+      </div>
+    </div>
+
+    <!-- Modal de Venta PRO (Microsoft Store Only para Usuarios Finales) -->
+    <div id="pro-modal" class="editor-modal" style="display: none;">
+      <div class="editor-modal__overlay"></div>
+      <div class="editor-modal__content editor-modal__content--pro">
+        <div class="pro-modal__banner">
+          <div class="pro-modal__sparkle"><i class="bi bi-gem"></i></div>
+          <h3 class="pro-modal__headline">Editor Markdown PRO</h3>
+          <p class="pro-modal__subheadline">Llevá tu productividad al siguiente nivel con superpoderes exclusivos</p>
+          <button type="button" id="pro-modal-close" class="pro-modal__close-btn" title="Cerrar"><i class="bi bi-x-lg"></i></button>
+        </div>
+
+        <div class="pro-features-grid">
+          <div class="pro-feature-item">
+            <div class="pro-feature-item__icon"><i class="bi bi-easel-fill"></i></div>
+            <div class="pro-feature-item__text">
+              <strong>Modo Presentación (Slideshow)</strong>
+              <span>Convertí cualquier documento Markdown en diapositivas interactivas con <code>---</code>.</span>
+            </div>
+          </div>
+          <div class="pro-feature-item">
+            <div class="pro-feature-item__icon"><i class="bi bi-bullseye"></i></div>
+            <div class="pro-feature-item__text">
+              <strong>Modo Enfoque Zen (Typewriter)</strong>
+              <span>Escribí con concentración total, pantalla limpia y línea activa siempre centrada.</span>
+            </div>
+          </div>
+          <div class="pro-feature-item">
+            <div class="pro-feature-item__icon"><i class="bi bi-palette-fill"></i></div>
+            <div class="pro-feature-item__text">
+              <strong>4 Temas Exclusivos PRO</strong>
+              <span>Cyberpunk Neon, Dracula Vampire, Solarized Dark y Amber Retro.</span>
+            </div>
+          </div>
+          <div class="pro-feature-item">
+            <div class="pro-feature-item__icon"><i class="bi bi-lightning-charge-fill"></i></div>
+            <div class="pro-feature-item__text">
+              <strong>Sin Anuncios ni Interrupciones</strong>
+              <span>Licencia de por vida para todos tus dispositivos Windows.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pro-pricing-box">
+          <div class="pro-pricing-box__info">
+            <span class="pro-pricing-box__badge">OFERTA DE LANZAMIENTO</span>
+            <span class="pro-pricing-box__price">$9.99 USD <small>/ Pago único de por vida</small></span>
+          </div>
+          <button type="button" id="btn-buy-store" class="pro-modal__cta-btn">
+            <i class="bi bi-bag-check-fill"></i> Desbloquear en Microsoft Store
+          </button>
+        </div>
+
+        <div class="pro-modal__footer-links">
+          <button type="button" id="btn-later-pro" class="pro-modal__later-btn">Continuar con la versión Free</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Secreto de Desarrollador (Acceso con Ctrl + Shift + Alt + D) -->
+    <div id="secret-dev-modal" class="editor-modal" style="display: none;">
+      <div class="editor-modal__overlay"></div>
+      <div class="editor-modal__content editor-modal__content--dev">
+        <div class="dev-modal__header">
+          <div class="dev-modal__title-group">
+            <i class="bi bi-terminal dev-modal__icon"></i>
+            <h4 class="dev-modal__title">Master Developer Access</h4>
+          </div>
+          <button type="button" id="secret-dev-modal-close" class="editor-modal__close-btn" title="Cerrar"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <p class="dev-modal__desc">Ingresá la clave de firma matemática para desbloquear DevTools en producción y activar la licencia PRO:</p>
+        <div class="dev-modal__form">
+          <input type="password" id="dev-master-key-input" class="dev-modal__input" placeholder="Master Key..." autocomplete="off" />
+          <button type="button" id="btn-submit-dev-key" class="dev-modal__btn">Ejecutar</button>
+        </div>
+        <span id="dev-key-feedback" class="dev-modal__feedback"></span>
+      </div>
+    </div>
+
+    <!-- Modal de Plantillas de Inicio Rápido -->
+    <div id="templates-modal" class="editor-modal" style="display: none;">
+      <div class="editor-modal__overlay"></div>
+      <div class="editor-modal__content editor-modal__content--wide">
+        <div class="editor-modal__header">
+          <div class="editor-modal__title-group">
+            <i class="bi bi-layout-text-window-reverse editor-modal__icon"></i>
+            <h4 class="editor-modal__title">Plantillas de Inicio Rápido</h4>
+          </div>
+          <button type="button" id="templates-modal-close" class="editor-modal__close-btn" title="Cerrar"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <p class="editor-modal__description">Elegí una estructura predefinida para arrancar tu documento al instante:</p>
+        <div class="templates-grid">
+          <div class="template-card" data-template="readme">
+            <div class="template-card__icon"><i class="bi bi-github"></i></div>
+            <div class="template-card__info">
+              <h5 class="template-card__title">README Profesional</h5>
+              <p class="template-card__desc">Estructura completa con badges, instalación, características y licencia para repositorios.</p>
+            </div>
+          </div>
+          <div class="template-card" data-template="meeting">
+            <div class="template-card__icon"><i class="bi bi-calendar-event"></i></div>
+            <div class="template-card__info">
+              <h5 class="template-card__title">Minuta de Reunión</h5>
+              <p class="template-card__desc">Organización de fecha, participantes, orden del día, decisiones y lista de acuerdos.</p>
+            </div>
+          </div>
+          <div class="template-card" data-template="api">
+            <div class="template-card__icon"><i class="bi bi-hdd-network"></i></div>
+            <div class="template-card__info">
+              <h5 class="template-card__title">Documentación de API</h5>
+              <p class="template-card__desc">Esquema REST con endpoints, cabeceras, parámetros, payloads JSON y respuestas de error.</p>
+            </div>
+          </div>
+          <div class="template-card" data-template="sprint">
+            <div class="template-card__icon"><i class="bi bi-kanban"></i></div>
+            <div class="template-card__info">
+              <h5 class="template-card__title">Sprint & To-Do Tracker</h5>
+              <p class="template-card__desc">Seguimiento de tareas por prioridad con checklists reactivos interactivos.</p>
+            </div>
+          </div>
+          <div class="template-card" data-template="changelog">
+            <div class="template-card__icon"><i class="bi bi-journal-code"></i></div>
+            <div class="template-card__info">
+              <h5 class="template-card__title">Changelog / Release Notes</h5>
+              <p class="template-card__desc">Historial de cambios con categorización: Novedades, Mejoras y Correcciones (SemVer).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Selección de Temas (Free + PRO) -->
+    <div id="theme-modal" class="editor-modal" style="display: none;">
+      <div class="editor-modal__overlay"></div>
+      <div class="editor-modal__content editor-modal__content--wide">
+        <div class="editor-modal__header">
+          <div class="editor-modal__title-group">
+            <i class="bi bi-palette editor-modal__icon"></i>
+            <h4 class="editor-modal__title">Temas Visuales</h4>
+          </div>
+          <button type="button" id="theme-modal-close" class="editor-modal__close-btn" title="Cerrar"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <p class="editor-modal__description">Seleccioná tu esquema de color preferido:</p>
+        
+        <h6 class="theme-section-title">Temas Base (Gratis)</h6>
+        <div class="theme-options">
+          <button type="button" class="theme-option" data-set-theme="slate">
+            <div class="theme-option__preview theme-option__preview--slate"></div>
+            <div class="theme-option__details">
+              <span class="theme-option__name">Slate Dark (Predeterminado)</span>
+              <span class="theme-option__desc">Tonos pizarra y azul balanceados</span>
+            </div>
+          </button>
+          <button type="button" class="theme-option" data-set-theme="obsidian">
+            <div class="theme-option__preview theme-option__preview--obsidian"></div>
+            <div class="theme-option__details">
+              <span class="theme-option__name">Obsidian Pitch Black</span>
+              <span class="theme-option__desc">Negro OLED con acentos violeta</span>
+            </div>
+          </button>
+          <button type="button" class="theme-option" data-set-theme="nordic">
+            <div class="theme-option__preview theme-option__preview--nordic"></div>
+            <div class="theme-option__details">
+              <span class="theme-option__name">Nordic Frost</span>
+              <span class="theme-option__desc">Paleta ártica con cian y azul glaciar</span>
+            </div>
+          </button>
+          <button type="button" class="theme-option" data-set-theme="light">
+            <div class="theme-option__preview theme-option__preview--light"></div>
+            <div class="theme-option__details">
+              <span class="theme-option__name">Clean Paper (Modo Claro)</span>
+              <span class="theme-option__desc">Fondo blanco cálido ideal para lectura</span>
+            </div>
+          </button>
+        </div>
+
+        <h6 class="theme-section-title theme-section-title--pro">
+          <span>Temas Exclusivos</span>
+          <span class="pro-tag">PRO</span>
+        </h6>
+        <div class="theme-options">
+          <button type="button" class="theme-option theme-option--pro" data-set-theme="cyberpunk" data-is-pro="true">
+            <div class="theme-option__preview theme-option__preview--cyberpunk"></div>
+            <div class="theme-option__details">
+              <span class="theme-option__name">Cyberpunk Neon <i class="bi bi-lock-fill theme-lock-icon"></i></span>
+              <span class="theme-option__desc">Oscuridad total con contrastes fucsia y cian neón</span>
+            </div>
+          </button>
+          <button type="button" class="theme-option theme-option--pro" data-set-theme="dracula" data-is-pro="true">
+            <div class="theme-option__preview theme-option__preview--dracula"></div>
+            <div class="theme-option__details">
+              <span class="theme-option__name">Dracula Vampire <i class="bi bi-lock-fill theme-lock-icon"></i></span>
+              <span class="theme-option__desc">El esquema de colores favorito de los desarrolladores</span>
+            </div>
+          </button>
+          <button type="button" class="theme-option theme-option--pro" data-set-theme="solarized" data-is-pro="true">
+            <div class="theme-option__preview theme-option__preview--solarized"></div>
+            <div class="theme-option__details">
+              <span class="theme-option__name">Solarized Dark <i class="bi bi-lock-fill theme-lock-icon"></i></span>
+              <span class="theme-option__desc">Contraste cálido óptico científicamente diseñado</span>
+            </div>
+          </button>
+          <button type="button" class="theme-option theme-option--pro" data-set-theme="amber" data-is-pro="true">
+            <div class="theme-option__preview theme-option__preview--amber"></div>
+            <div class="theme-option__details">
+              <span class="theme-option__name">Amber Retro CRT <i class="bi bi-lock-fill theme-lock-icon"></i></span>
+              <span class="theme-option__desc">Estética de terminal monocromática de fósforo ámbar</span>
+            </div>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
     <!-- Modal de Votación (Store) -->
     <div id="store-rating-modal" class="store-modal" style="display: none;">
       <div class="store-modal__content">
@@ -85,6 +512,9 @@
         </div>
       </div>
     </div>
+
+    <!-- Contenedor Flotante de Notificaciones Toast -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
     <script src="./script.js"></script>
   </body>

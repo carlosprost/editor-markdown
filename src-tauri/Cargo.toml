@@ -1,6 +1,6 @@
 [package]
 name = "editor-markdown"
-version = "2.1.3"
+version = "2.3.0"
 description = "Editor de Markdown con visor interactivo colapsable - WolfTeI"
 authors = ["WolfTeI"]
 edition = "2021"
@@ -25,7 +25,7 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 # Framework principal de la aplicación de escritorio
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["devtools"] }
 
 # Plugins oficiales de Tauri V2
 tauri-plugin-dialog = "2"

@@ -1,6 +1,6 @@
 {
   "name": "editor-markdown",
-  "version": "2.1.3",
+  "version": "2.3.0",
   "description": "Editor de markdown de nivel comercial con visor interactivo colapsable",
   "scripts": {
     "dev": "tauri dev",

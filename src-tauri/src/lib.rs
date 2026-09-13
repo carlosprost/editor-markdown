@@ -8,6 +8,7 @@ use commands::archivos::{
     obtener_archivo_inicio,
 };
 use commands::dialogos::{dialogo_sin_guardar, mostrar_error};
+use commands::licencia::{activar_master_developer, verificar_licencia_store};
 use commands::markdown::parsear_markdown;
 
 /// Punto de entrada de la librería de la app.
@@ -19,7 +20,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
-        // Registro de todos los comandos del backend (equivalente a los ipcMain.handle de Electron)
+        // Registro de todos los comandos del backend (IPC Tauri)
         .invoke_handler(tauri::generate_handler![
             // Comandos de archivos
             abrir_archivo,
@@ -33,6 +34,9 @@ pub fn run() {
             // Comandos de diálogos
             dialogo_sin_guardar,
             mostrar_error,
+            // Comandos de Licencia & Microsoft Store
+            verificar_licencia_store,
+            activar_master_developer,
         ])
         .run(tauri::generate_context!())
         .expect("Error al iniciar la aplicación Editor Markdown");
