@@ -66,6 +66,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   let currentSlideIndex = 0;
   let isSlideshowActive = false;
 
+  // Catálogo de Temas Visuales
+  const TEMAS_MAP = {
+    slate: "Slate Dark",
+    obsidian: "Obsidian Pitch Black",
+    nordic: "Nordic Frost",
+    light: "Clean Paper (Claro)",
+    cyberpunk: "Cyberpunk Neon (PRO)",
+    dracula: "Dracula Vampire (PRO)",
+    solarized: "Solarized Dark (PRO)",
+    amber: "Amber Retro (PRO)"
+  };
+
+  const TEMAS_PRO_LIST = ["cyberpunk", "dracula", "solarized", "amber"];
+
   // Estado PRO y Monetización
   let isPro = window.localStorage.getItem("editor_pro_license") === "active";
   let lastProModalShownTime = 0;
@@ -116,6 +130,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const devKeyFeedback = document.querySelector("#dev-key-feedback");
 
   function actualizarEstadoProUI() {
+    // 1. Registrar fecha de activación si es PRO
+    if (isPro && !window.localStorage.getItem("pro_activation_date")) {
+      window.localStorage.setItem("pro_activation_date", Date.now().toString());
+    }
+
     if (isPro) {
       if (btnPro) {
         btnPro.classList.add("editor-header__pro-btn--active");
@@ -125,7 +144,34 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (statProBadge) {
         statProBadge.innerHTML = '<span class="badge-pro">👑 PRO</span>';
       }
-      document.querySelectorAll(".theme-lock-icon").forEach(el => el.style.display = "none");
+
+      // Ocultar badges "PRO" en los botones de la barra de herramientas
+      document.querySelectorAll(".editor-header__action-btn--pro-feature .pro-tag").forEach(el => {
+        el.style.display = "none";
+      });
+
+      // Encabezado del modal de temas en versión PRO
+      const themeProSectionTitle = document.querySelector("#theme-pro-section-title");
+      const themeProSectionTag = document.querySelector("#theme-pro-section-tag");
+      if (themeProSectionTitle) themeProSectionTitle.innerText = "Temas Adicionales Desbloqueados";
+      if (themeProSectionTag) themeProSectionTag.style.display = "none";
+
+      // Gestión de badges "NEW" en los temas PRO (hasta que se usen o pasen 3 días)
+      const usedThemes = JSON.parse(window.localStorage.getItem("pro_used_themes") || "[]");
+      const activationDate = parseInt(window.localStorage.getItem("pro_activation_date") || "0", 10);
+      const TRES_DIAS_MS = 3 * 24 * 60 * 60 * 1000;
+      const sigueEnPeriodoNovedad = (Date.now() - activationDate) < TRES_DIAS_MS;
+
+      TEMAS_PRO_LIST.forEach(themeKey => {
+        const slot = document.querySelector(`.theme-badge-slot[data-theme-badge="${themeKey}"]`);
+        if (slot) {
+          if (!usedThemes.includes(themeKey) && sigueEnPeriodoNovedad) {
+            slot.innerHTML = '<span class="new-tag">NEW</span>';
+          } else {
+            slot.innerHTML = '';
+          }
+        }
+      });
     } else {
       if (btnPro) {
         btnPro.classList.remove("editor-header__pro-btn--active");
@@ -135,7 +181,25 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (statProBadge) {
         statProBadge.innerHTML = '<span class="badge-free">FREE</span>';
       }
-      document.querySelectorAll(".theme-lock-icon").forEach(el => el.style.display = "inline");
+
+      // Mostrar badges "PRO" en los botones de la barra de herramientas
+      document.querySelectorAll(".editor-header__action-btn--pro-feature .pro-tag").forEach(el => {
+        el.style.display = "block";
+      });
+
+      // Encabezado del modal de temas en versión Free
+      const themeProSectionTitle = document.querySelector("#theme-pro-section-title");
+      const themeProSectionTag = document.querySelector("#theme-pro-section-tag");
+      if (themeProSectionTitle) themeProSectionTitle.innerText = "Temas Exclusivos";
+      if (themeProSectionTag) themeProSectionTag.style.display = "inline-block";
+
+      // Mostrar ícono de candado en los temas PRO
+      TEMAS_PRO_LIST.forEach(themeKey => {
+        const slot = document.querySelector(`.theme-badge-slot[data-theme-badge="${themeKey}"]`);
+        if (slot) {
+          slot.innerHTML = '<i class="bi bi-lock-fill theme-lock-icon"></i>';
+        }
+      });
     }
   }
 
@@ -162,6 +226,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function abrirModalPro() {
+    if (isPro) {
+      showToast("👑 ¡Tu licencia PRO está activa y desbloqueada de por vida!", "success", 3500);
+      return;
+    }
     if (proModal) {
       proModal.style.display = "flex";
       lastProModalShownTime = Date.now();
@@ -227,7 +295,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Eventos Modal PRO
-  btnPro?.addEventListener("click", abrirModalPro);
+  btnPro?.addEventListener("click", () => {
+    if (isPro) {
+      showToast("👑 ¡Tu licencia PRO está activa y desbloqueada de por vida!", "success", 3500);
+    } else {
+      abrirModalPro();
+    }
+  });
   btnCloseProModal?.addEventListener("click", cerrarModalPro);
   btnLaterPro?.addEventListener("click", cerrarModalPro);
 
@@ -267,19 +341,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   /* ==========================================================================
      3. Sistema de Temas Visuales (Free + PRO)
      ========================================================================== */
-
-  const TEMAS_MAP = {
-    slate: "Slate Dark",
-    obsidian: "Obsidian Pitch Black",
-    nordic: "Nordic Frost",
-    light: "Clean Paper (Claro)",
-    cyberpunk: "Cyberpunk Neon (PRO)",
-    dracula: "Dracula Vampire (PRO)",
-    solarized: "Solarized Dark (PRO)",
-    amber: "Amber Retro (PRO)"
-  };
-
-  const TEMAS_PRO_LIST = ["cyberpunk", "dracula", "solarized", "amber"];
 
   function aplicarTema(tema) {
     const temaValido = TEMAS_MAP[tema] ? tema : "slate";
@@ -381,6 +442,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       showToast("El Modo Enfoque Zen es una función PRO", "warning");
       return;
     }
+
+    if (estaDeshabilitadoEditor()) habilitarEditor();
 
     const isZen = document.body.classList.toggle("editor-app--zen");
     if (zenExitBtn) zenExitBtn.style.display = isZen ? "flex" : "none";
@@ -654,7 +717,7 @@ document.addEventListener("DOMContentLoaded", async () => {
      ========================================================================== */
 
   function wrapSelection(prefix, suffix, defaultText = "texto") {
-    if (estaDeshabilitadoEditor()) return;
+    if (estaDeshabilitadoEditor()) habilitarEditor();
     editor.focus();
 
     const start = editor.selectionStart;
@@ -674,7 +737,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function insertLinePrefix(prefix) {
-    if (estaDeshabilitadoEditor()) return;
+    if (estaDeshabilitadoEditor()) habilitarEditor();
     editor.focus();
 
     const start = editor.selectionStart;
@@ -697,6 +760,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function insertTable() {
+    if (estaDeshabilitadoEditor()) habilitarEditor();
     const tableTemplate = `\n| Columna 1 | Columna 2 | Columna 3 |\n| :--- | :---: | ---: |\n| Fila 1, Dato 1 | Fila 1, Dato 2 | Fila 1, Dato 3 |\n| Fila 2, Dato 1 | Fila 2, Dato 2 | Fila 2, Dato 3 |\n\n`;
     wrapSelection("", tableTemplate, "");
     showToast("Tabla Markdown insertada", "success");
@@ -922,6 +986,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       if (selected) {
+        // Si es un tema PRO y el usuario es PRO, marcarlo como usado para remover el badge "NEW"
+        if (TEMAS_PRO_LIST.includes(selected) && isPro) {
+          let usedThemes = JSON.parse(window.localStorage.getItem("pro_used_themes") || "[]");
+          if (!usedThemes.includes(selected)) {
+            usedThemes.push(selected);
+            window.localStorage.setItem("pro_used_themes", JSON.stringify(usedThemes));
+            actualizarEstadoProUI();
+          }
+        }
+
         aplicarTema(selected);
         if (themeModal) themeModal.style.display = "none";
         showToast(`Tema cambiado a ${TEMAS_MAP[selected]}`, "success");
