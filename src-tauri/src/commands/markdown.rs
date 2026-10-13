@@ -17,8 +17,9 @@ use std::collections::HashMap;
 ///
 /// # Parámetros
 /// * `texto` - Texto plano en formato Markdown escrito por el usuario.
+/// * `ruta_base` - Ruta absoluta del documento abierto actualmente para resolver imágenes relativas.
 #[tauri::command]
-pub fn parsear_markdown(texto: String) -> String {
+pub fn parsear_markdown(texto: String, ruta_base: Option<String>) -> String {
     if texto.is_empty() {
         return String::new();
     }
@@ -42,7 +43,10 @@ pub fn parsear_markdown(texto: String) -> String {
     let html_con_alertas = procesar_alertas_github(&html_sanitizado);
 
     // Paso 4: Extensiones premium (resaltado ==texto==, emojis shortcodes)
-    procesar_markdown_extendido(&html_con_alertas)
+    let html_extendido = procesar_markdown_extendido(&html_con_alertas);
+
+    // Paso 5: Incrustación de imágenes locales relativas/absolutas como Data URLs Base64
+    super::imagenes::incrustar_imagenes_locales(&html_extendido, ruta_base.as_deref())
 }
 
 /// Sanitiza el HTML eliminando vectores de ataque XSS comunes.

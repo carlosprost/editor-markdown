@@ -1,9 +1,9 @@
 /**
- * @fileoverview Lógica de interfaz del Editor Markdown (v2.3.0) para Tauri V2.
+ * @fileoverview Lógica de interfaz del Editor Markdown (v2.4.0) para Tauri V2.
  * Administra la interacción del usuario con la UI, actualiza el editor en tiempo real,
  * calcula estadísticas en vivo, coordina el scroll sincronizado, búsqueda/reemplazo,
- * temas visuales (Free + PRO), plantillas, modo presentación, modo zen y la
- * verificación y restauración automática de licencias con la Microsoft Store.
+ * temas visuales (Free + PRO), plantillas, modo presentación, modo zen, exportación
+ * nativa a PDF (WebView2) y la verificación automática de licencias con la Microsoft Store.
  */
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -622,7 +622,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function convertMarkdown(text) {
     if (invoke) {
-      preview.innerHTML = await invoke("parsear_markdown", { texto: text });
+      const rutaBase = obtenerRuta() || null;
+      preview.innerHTML = await invoke("parsear_markdown", { texto: text, rutaBase });
     } else {
       preview.innerText = text;
     }
@@ -783,7 +784,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.querySelector("#tool-ol")?.addEventListener("click", () => insertLinePrefix("1. "));
   document.querySelector("#tool-task")?.addEventListener("click", () => insertLinePrefix("- [ ] "));
 
+  /**
+   * Abre el selector nativo del sistema para importar una imagen.
+   * Si el documento actual está guardado en disco, calcula la ruta relativa automáticamente.
+   *
+   * @async
+   * @returns {Promise<void>}
+   */
+  async function insertarImagenNativa() {
+    if (estaDeshabilitadoEditor()) habilitarEditor();
+    if (!invoke) return;
+
+    try {
+      const rutaDoc = obtenerRuta() || null;
+      const res = await invoke("seleccionar_imagen", { rutaDocumento: rutaDoc });
+      if (res) {
+        const altText = res.nombre.replace(/\.[^/.]+$/, "");
+        const markdownImg = `![${altText}](${res.ruta_relativa})`;
+        wrapSelection("", markdownImg, "");
+        showToast(`Imagen importada: ${res.nombre}`, "success");
+      }
+    } catch (err) {
+      console.error("Error al seleccionar imagen:", err);
+      showToast("Error al seleccionar imagen", "error");
+    }
+  }
+
   document.querySelector("#tool-link")?.addEventListener("click", () => wrapSelection("[", "](https://ejemplo.com)", "enlace"));
+  document.querySelector("#tool-image")?.addEventListener("click", () => insertarImagenNativa());
   document.querySelector("#tool-table")?.addEventListener("click", insertTable);
   document.querySelector("#tool-hr")?.addEventListener("click", () => wrapSelection("\n---\n\n", "", ""));
 
@@ -1012,7 +1040,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     meeting: `# 📝 Minuta de Reunión\n\n**Fecha:** ${new Date().toLocaleDateString("es-AR")}\n**Participantes:** Equipo Técnico\n\n---\n\n## 🎯 Orden del Día\n1. Estado de la versión PRO.\n2. Roadmap de lanzamiento.\n\n## 📌 Acuerdos\n- [x] Implementar verificación automática de licencias\n- [ ] Publicar build en la Store\n`,
     api: `# 🔌 Documentación de API REST\n\n\`GET /api/v1/recurso\`\n\n### Respuesta Exitosa (\`200 OK\`)\n\`\`\`json\n{\n  "status": "success",\n  "data": []\n}\n\`\`\`\n`,
     sprint: `# 📋 Sprint Tracker\n\n## 🔴 Alta Prioridad\n- [x] Modo Presentación\n- [x] Modo Enfoque Zen\n- [x] 4 Temas PRO\n\n## 🟡 Media Prioridad\n- [ ] Campaña promocional\n`,
-    changelog: `# 📜 Notas de la Versión\n\n## [v2.3.0] - ${new Date().toLocaleDateString("es-AR")}\n\n- 👑 **Editor Markdown PRO:** Presentación, Modo Zen, 4 temas PRO y restauración automática de licencias.\n`
+    changelog: `# 📜 Notas de la Versión\n\n## [v2.4.0] - ${new Date().toLocaleDateString("es-AR")}\n\n- 📄 **Exportación Nativa a PDF:** Motor vectorial WebView2 (PrintToPdf) sin límite de páginas, con texto seleccionable e imágenes de alta definición.\n- 🖼️ **Soporte Completo de Imágenes Locales:** Resolución automática de rutas relativas con codificación Base64 en tiempo real.\n- ⚡ **Optimización de Rendimiento:** Modularización de plantillas y compilación de Rust optimizada.\n\n## [v2.3.0]\n- 👑 **Editor Markdown PRO:** Presentación, Modo Zen, 4 temas PRO y restauración de licencias.\n`
   };
 
   document.querySelectorAll(".template-card").forEach((card) => {
@@ -1071,9 +1099,45 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  document.querySelector("#export-pdf").addEventListener("click", () => {
-    if (estaDeshabilitadoEditor()) return;
-    window.print();
+  /**
+   * Exporta el contenido del documento actual a PDF de forma nativa.
+   * Utiliza el motor Microsoft Edge WebView2 nativo de Windows (ICoreWebView2_7::PrintToPdf),
+   * generando documentos vectoriales de alta fidelidad sin límites de canvas ni cuadros de impresora.
+   *
+   * @async
+   * @returns {Promise<void>}
+   */
+  async function exportarDocumentoPdf() {
+    if (estaDeshabilitadoEditor() || !invoke) return;
+
+    const contenidoHtml = preview.innerHTML.trim();
+    if (!contenidoHtml) {
+      showToast("No hay contenido para exportar a PDF", "warning");
+      return;
+    }
+
+    showToast("Generando PDF nativo...", "info", 2000);
+
+    // Determinamos el nombre sugerido a partir del archivo actual
+    const nombreBase = obtenerFileName().replace(/\.md$/i, "");
+    const nombreSugerido = `${nombreBase || "documento"}.pdf`;
+
+    try {
+      const guardado = await invoke("exportar_pdf_nativo", {
+        nombreSugerido
+      });
+
+      if (guardado) {
+        showToast("Documento exportado como PDF con éxito", "success");
+      }
+    } catch (err) {
+      console.error("Error al exportar a PDF nativo:", err);
+      showToast("Error al exportar el archivo PDF: " + err, "error");
+    }
+  }
+
+  document.querySelector("#export-pdf").addEventListener("click", async () => {
+    await exportarDocumentoPdf();
   });
 
   document.querySelector("#toggle-view").addEventListener("click", () => {
@@ -1366,15 +1430,31 @@ document.addEventListener("DOMContentLoaded", async () => {
         const paths = event.payload.paths;
         if (paths && paths.length > 0) {
           const rutaFile = paths[0];
-          if (rutaFile.split(".").pop().toLowerCase() === "md") {
+          const ext = rutaFile.split(".").pop().toLowerCase();
+          if (ext === "md") {
             if (estaDeshabilitadoEditor()) habilitarEditor();
             await cargarArchivoAbierto(rutaFile);
             showToast(`Archivo cargado: ${rutaFile.split(/[\\/]/).pop()}`, "info");
+          } else if (["png", "jpg", "jpeg", "webp", "gif", "svg", "bmp"].includes(ext)) {
+            if (estaDeshabilitadoEditor()) habilitarEditor();
+            const nombreImg = rutaFile.split(/[\\/]/).pop();
+            const altText = nombreImg.replace(/\.[^/.]+$/, "");
+            let rutaRel = rutaFile.replace(/\\/g, "/");
+            const rutaDoc = obtenerRuta();
+            if (rutaDoc) {
+              const docNormal = rutaDoc.replace(/\\/g, "/");
+              const docDir = docNormal.substring(0, docNormal.lastIndexOf("/"));
+              if (rutaRel.startsWith(docDir)) {
+                rutaRel = "." + rutaRel.substring(docDir.length);
+              }
+            }
+            wrapSelection("", `![${altText}](${rutaRel})`, "");
+            showToast(`Imagen importada: ${nombreImg}`, "success");
           } else {
             if (invoke) {
               await invoke("mostrar_error", {
                 titulo: "Archivo no soportado",
-                mensaje: "Por favor, arrastrá únicamente archivos con extensión .md, che."
+                mensaje: "Por favor, arrastrá archivos con extensión .md o imágenes (.png, .jpg, .webp, .svg), che."
               });
             }
           }

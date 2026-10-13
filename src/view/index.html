@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Editor Markdown v2.3.0 con Modo Presentación, Modo Enfoque Zen, estadísticas y temas PRO - WolfTeI" />
+    <meta name="description" content="Editor Markdown v2.4.0 con Exportación Nativa a PDF, soporte de imágenes locales, Modo Presentación, Modo Enfoque Zen y temas PRO - WolfTeI" />
     <link rel="stylesheet" href="./bootstrap-icons/bootstrap-icons.css" />
     <link rel="stylesheet" href="./style.css" />
     <title>Editor Markdown</title>
@@ -59,7 +59,7 @@
             <button type="button" id="export" class="editor-header__action-btn" title="Exportar como HTML">
               <i class="bi bi-filetype-html"></i>
             </button>
-            <button type="button" id="export-pdf" class="editor-header__action-btn" title="Exportar como PDF (Imprimir)">
+            <button type="button" id="export-pdf" class="editor-header__action-btn" title="Exportar como PDF">
               <i class="bi bi-filetype-pdf"></i>
             </button>
             <button type="button" id="toggle-view" class="editor-header__action-btn" title="Modo Visor (Colapsar editor)">
@@ -157,6 +157,9 @@
       <div class="editor-toolbar__group">
         <button type="button" id="tool-link" class="editor-toolbar__btn" title="Insertar enlace ([texto](url))">
           <i class="bi bi-link-45deg"></i>
+        </button>
+        <button type="button" id="tool-image" class="editor-toolbar__btn" title="Insertar imagen local o remota">
+          <i class="bi bi-image"></i>
         </button>
         <button type="button" id="tool-table" class="editor-toolbar__btn" title="Insertar tabla Markdown">
           <i class="bi bi-table"></i>
@@ -516,6 +519,7 @@
     <!-- Contenedor Flotante de Notificaciones Toast -->
     <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
+    <script src="./vendor/html2pdf.bundle.min.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>

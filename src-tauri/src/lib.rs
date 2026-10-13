@@ -4,12 +4,14 @@
 mod commands;
 
 use commands::archivos::{
-    abrir_archivo, exportar_html, guardar_archivo, guardar_como, leer_archivo,
+    abrir_archivo, exportar_html, exportar_pdf, guardar_archivo, guardar_como, leer_archivo,
     obtener_archivo_inicio,
 };
 use commands::dialogos::{dialogo_sin_guardar, mostrar_error};
+use commands::imagenes::seleccionar_imagen;
 use commands::licencia::{activar_master_developer, verificar_licencia_store};
 use commands::markdown::parsear_markdown;
+use commands::pdf::exportar_pdf_nativo;
 
 /// Punto de entrada de la librería de la app.
 /// Registra todos los plugins y comandos disponibles en la interfaz IPC de Tauri V2.
@@ -28,7 +30,12 @@ pub fn run() {
             guardar_archivo,
             guardar_como,
             exportar_html,
+            exportar_pdf,
             obtener_archivo_inicio,
+            // Comandos de PDF Nativo (WebView2)
+            exportar_pdf_nativo,
+            // Comandos de imágenes
+            seleccionar_imagen,
             // Comandos de Markdown
             parsear_markdown,
             // Comandos de diálogos

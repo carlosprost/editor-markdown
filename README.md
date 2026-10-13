@@ -1,4 +1,4 @@
-# 💎 Editor de Markdown (v2.3.0 - Edición Comercial & PRO)
+# 💎 Editor de Markdown (v2.4.0 - Edición Comercial & PRO)
 
 <a href="ms-windows-store://pdp/?productid=9PC8MCBSJ2HJ">
   <img src="https://img.shields.io/badge/Disponible_en-Microsoft_Store-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Disponible en Microsoft Store"/>
@@ -12,15 +12,17 @@ Esta aplicación combina la ligereza y velocidad nativa de Rust con una experien
 
 ---
 
-## 🚀 Características de la Versión 2.3.0
+## 🚀 Características de la Versión 2.4.0
 
-### 🟢 Funciones Gratuitas (Free):
+### 🟢 Novedades y Funciones Gratuitas:
+*   📄 **Exportación Nativa a PDF:** Motor vectorial ultra rápido basado en Microsoft Edge WebView2 (`PrintToPdf`) sin cuadros de impresora, sin límites de altura ni desbordamiento de memoria; exporta documentos masivos (30+ páginas) con diseño limpio e imágenes perfectas.
+*   🖼️ **Soporte Completo de Imágenes:** Carga y renderizado en tiempo real de imágenes relativas (`./docs/...`), botón de inserción gráfica y arrastrar y soltar de archivos de imagen directo al editor.
 *   **Barra de Formato Rápido Completa:** Negrita (`**`), Cursiva (`*`), Tachado (`~~`), Resaltado (`==`), Encabezados (H1, H2, H3), Citas, Código, Listas, Tareas interactivas y Tablas.
 *   **Modo Visor Colapsable:** Ocultá el editor con una animación suave para lectura fluida.
 *   **Buscador y Reemplazador Integrado:** Atajo `Ctrl + F` y `Ctrl + H` con navegación de resultados.
 *   **Barra de Estado en Vivo:** Conteo de palabras, caracteres, líneas, tiempo estimado de lectura y estado del archivo.
 *   **4 Temas Base:** *Slate Dark*, *Obsidian Pitch Black*, *Nordic Frost* y *Clean Paper (Modo Claro)*.
-*   **Exportación:** Exportar documento a HTML y a PDF.
+*   **Exportación:** Exportar documento a HTML y a PDF vectorial nativo.
 *   **Scroll Sincronizado Inteligente & Auto-Borrador de Respaldo.**
 
 ---

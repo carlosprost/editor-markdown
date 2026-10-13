@@ -1940,19 +1940,144 @@ body {
 }
 
 /* ==========================================================================
-   Estilos de Impresión (@media print)
+   Estilos de Exportación Nativa a PDF y @media print
    ========================================================================== */
 
+/* Soporte de saltos de página y prevención de cortes para exportación PDF e impresión */
+.editor-workspace__preview-content .page-break,
+.page-break {
+  page-break-after: always !important;
+  break-after: page !important;
+  display: block;
+}
+
+.editor-workspace__preview-content table,
+.editor-workspace__preview-content pre,
+.editor-workspace__preview-content blockquote,
+.editor-workspace__preview-content .editor-alert {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.editor-workspace__preview-content h1,
+.editor-workspace__preview-content h2,
+.editor-workspace__preview-content h3 {
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+/* Reglas de impresión nativa y exportación a PDF (@media print) */
 @media print {
-  body { background: #ffffff !important; color: #000000 !important; }
-  .editor-header, .editor-toolbar, .editor-statusbar, .find-replace,
-  .editor-workspace__panel--editor, .code-copy-btn, .toast-container,
-  .editor-modal, .store-modal, .slideshow-overlay, .zen-exit-pill {
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html,
+  body,
+  .editor-app {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  .editor-header,
+  .editor-toolbar,
+  .editor-statusbar,
+  .editor-footer,
+  .editor-workspace__panel--editor,
+  .editor-workspace__resizer,
+  .code-copy-btn,
+  .toast-container,
+  .editor-modal,
+  .store-modal,
+  .slideshow-overlay,
+  .zen-exit-pill,
+  #find-replace-panel {
     display: none !important;
   }
-  .editor-workspace { height: auto !important; display: block !important; }
-  .editor-workspace__panel--preview { max-width: 100% !important; overflow: visible !important; }
-  .editor-workspace__preview-content { padding: 0 !important; max-width: 100% !important; color: #000000 !important; }
-  .editor-workspace__preview-content pre { border: 1px solid #cccccc !important; background: #f5f5f5 !important; }
-  .editor-workspace__preview-content code { color: #000000 !important; }
+
+  .editor-workspace {
+    height: auto !important;
+    display: block !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  .editor-workspace__panel--preview {
+    max-width: 100% !important;
+    width: 100% !important;
+    overflow: visible !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .editor-workspace__preview-content {
+    padding: 0 !important;
+    max-width: 100% !important;
+    color: #0f172a !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  .editor-workspace__preview-content h1,
+  .editor-workspace__preview-content h2,
+  .editor-workspace__preview-content h3,
+  .editor-workspace__preview-content h4,
+  .editor-workspace__preview-content h5,
+  .editor-workspace__preview-content h6 {
+    color: #0f172a !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .editor-workspace__preview-content p,
+  .editor-workspace__preview-content li,
+  .editor-workspace__preview-content td,
+  .editor-workspace__preview-content th {
+    color: #1e293b !important;
+  }
+
+  .editor-workspace__preview-content pre {
+    border: 1px solid #cbd5e1 !important;
+    background: #f8fafc !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .editor-workspace__preview-content code {
+    color: #0f172a !important;
+  }
+
+  .editor-workspace__preview-content img {
+    max-width: 100% !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .editor-workspace__preview-content table,
+  .editor-workspace__preview-content blockquote,
+  .editor-workspace__preview-content .editor-alert {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .page-break,
+  .page-break-after {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .page-break-before {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
 }

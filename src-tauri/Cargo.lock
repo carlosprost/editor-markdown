@@ -684,8 +684,9 @@ checksum = "d0881ea181b1df73ff77ffaaf9c7544ecc11e82fba9b5f27b262a3c73a332555"
 
 [[package]]
 name = "editor-markdown"
-version = "2.3.0"
+version = "2.4.0"
 dependencies = [
+ "base64 0.22.1",
  "pulldown-cmark",
  "regex",
  "serde",
@@ -695,6 +696,8 @@ dependencies = [
  "tauri-plugin-dialog",
  "tauri-plugin-fs",
  "tauri-plugin-shell",
+ "webview2-com",
+ "windows",
 ]
 
 [[package]]
