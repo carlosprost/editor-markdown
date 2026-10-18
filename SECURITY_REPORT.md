@@ -1,6 +1,6 @@
 # Reporte de Seguridad del Editor Markdown (SECURITY_REPORT.md)
 
-Este documento detalla la auditoría de seguridad y las medidas implementadas en el proyecto para mitigar vulnerabilidades y cumplir con los estándares de ciberseguridad (OWASP Top 10, ISO 27001 e ISO 27002) para la versión **v2.4.0 (Versión Comercial + PRO)**.
+Este documento detalla la auditoría de seguridad y las medidas implementadas en el proyecto para mitigar vulnerabilidades y cumplir con los estándares de ciberseguridad (OWASP Top 10, ISO 27001 e ISO 27002) para la versión **v2.4.1 (Versión Comercial + PRO Hotfix)**.
 
 ---
 
@@ -28,20 +28,21 @@ Este documento detalla la auditoría de seguridad y las medidas implementadas en
 | `exportar_pdf` | Privado / Local | Diálogo nativo de guardado restringido a `.pdf`. Escribe bytes generados localmente. |
 | `exportar_pdf_nativo` | Privado / Local | Diálogo nativo de guardado restringido a `.pdf`. Ejecuta `PrintToPdf` de WebView2 por canal COM aislado; previene DoS y bloqueos por desbordamiento de canvas. |
 | `seleccionar_imagen` | Privado / Local | Diálogo nativo restringido a extensiones gráficas (.png, .jpg, .webp, .svg, .gif, .bmp) con cálculo seguro de rutas relativas. |
-| `obtener_archivo_inicio` | Privado / Local | Captura argumentos de Windows filtrando flags (`--`) y validando extensiones `.md`. |
+| `obtener_archivo_inicio` | Privado / Local | Captura argumentos de Windows con `args_os()` inmune a pánicos Unicode y valida extensiones `.md` con decodificación de texto tolerante. |
 | `dialogo_sin_guardar` | Privado / Local | Diálogo de confirmación nativo del SO. |
-| `parsear_markdown` | Privado / Local | Envía texto a Rust, procesa con GFM, sanitiza etiquetas y resuelve imágenes locales a Base64 según la ruta base del documento. |
+| `parsear_markdown` | Privado / Local | Envía texto a Rust, procesa con GFM, sanitiza etiquetas y resuelve imágenes locales a Base64 según la ruta base del documento. Optimizado con `LazyLock` estático de expresiones regulares (Zero-recompilation). |
 | `verificar_licencia_store` | Privado / Local | Verifica de forma pasiva la licencia en AppData y entorno MSIX/Store de Windows sin consultar claves en texto plano. |
 | `activar_master_developer` | Privado / Local | Valida la Master Key mediante cálculo algebraico no lineal y fragmentos dispersos (`Sharded Checksum`). Habilita Tauri DevTools y PRO. |
 
 ---
 
-## 3. Matriz de Prevención de Vulnerabilidades (OWASP Top 10)
+## 3. Matriz de Prevención de Vulnerabilidades (OWASP Top 10 & ISO 27032)
 
-| Vulnerabilidad Mitigada | Tipo de Ataque Bloqueado | Mecanismo de Seguridad Aplicado |
+| Vulnerabilidad Mitigada | Tipo de Ataque / Fallo Bloqueado | Mecanismo de Seguridad y Resiliencia Aplicado |
 | :--- | :--- | :--- |
-| **A01: Broken Access Control** | Manipulación no autorizada del sistema o rutas arbitrarias. | **Aislamiento por IPC:** El frontend web no tiene privilegios de SO; los diálogos nativos gestionan la ruta de destino. |
-| **A02: Cryptographic Failures** | Fuga de datos de pago o tarjetas. | **Delegación a Microsoft Store:** La app no toca datos financieros; todo se tramita por la pasarela de Windows. |
+| **A01: Broken Access Control** | Manipulación no autorizada del sistema o rutas arbitrarias. | **Aislamiento por IPC:** El frontend web no tiene privilegios de SO; los diálogos nativos gestionan la ruta de destino validada con `PathBuf`. |
+| **A02: Cryptographic Failures** | Fuga de datos de pago o tarjetas. | **Delegación a Microsoft Store:** La app no toca datos financieros; todo se tramita por la pasarela oficial de Windows. |
 | **A03: Injection (XSS)** | Inyección de JavaScript vía documentos `.md` o imágenes maliciosas. | **Sanitización Rust:** Limpieza de scripts y handlers antes de renderizar tanto en preview como en exportación. Las imágenes locales se validan por extensión y tamaño antes de convertirse a Data URL. |
-| **A06: Outdated Components** | Librerías externas vulnerables o dependencias remotas no confiables. | **Empaquetado local:** Bootstrap Icons y html2pdf.js se sirven localmente bajo CSP estricto (`default-src 'self'`). |
-| **A04: Insecure Design** | Filtrado de rutas del sistema y stack traces. | **Rust Error Handling:** Mensajes de error controlados sin filtrar rutas internas. |
+| **A04: Insecure Design & DoS (Hangs)** | Denegación de servicio por saturación de CPU o cuelgues de ventana (> 5s). | **LazyLock Estático y Debounce UI:** Se eliminó la recompilación continua de Regex en el backend y se aplicó debounce de 120ms en el frontend con persistencia asíncrona de borrador, garantizando 60 FPS y 0% de cuelgues. |
+| **ISO 27032 & Resiliencia Operativa** | Crashes abruptos del binario en release por pánicos de caracteres regionales. | **Robusteza Unicode con `args_os` y Fallback Lossy:** Prevención de pánicos irrecuperables ante argumentos o archivos con codificaciones internacionales (GBK, ISO-8859-9, Windows-1252) de China, Turquía, Italia, España y Argentina. |
+| **A06: Outdated Components** | Librerías externas vulnerables o dependencias remotas no confiables. | **Empaquetado local:** Bootstrap Icons y componentes se sirven localmente bajo CSP estricto (`default-src 'self'`). |

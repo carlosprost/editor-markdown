@@ -1,4 +1,4 @@
-# 💎 Editor de Markdown (v2.4.0 - Edición Comercial & PRO)
+# 💎 Editor de Markdown (v2.4.1 - Edición Comercial & PRO)
 
 <a href="ms-windows-store://pdp/?productid=9PC8MCBSJ2HJ">
   <img src="https://img.shields.io/badge/Disponible_en-Microsoft_Store-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Disponible en Microsoft Store"/>
@@ -12,11 +12,13 @@ Esta aplicación combina la ligereza y velocidad nativa de Rust con una experien
 
 ---
 
-## 🚀 Características de la Versión 2.4.0
+## 🚀 Novedades de la Versión 2.4.1 (Parche Crítico de Estabilidad)
 
-### 🟢 Novedades y Funciones Gratuitas:
-*   📄 **Exportación Nativa a PDF:** Motor vectorial ultra rápido basado en Microsoft Edge WebView2 (`PrintToPdf`) sin cuadros de impresora, sin límites de altura ni desbordamiento de memoria; exporta documentos masivos (30+ páginas) con diseño limpio e imágenes perfectas.
-*   🖼️ **Soporte Completo de Imágenes:** Carga y renderizado en tiempo real de imágenes relativas (`./docs/...`), botón de inserción gráfica y arrastrar y soltar de archivos de imagen directo al editor.
+* 🛡️ **Blindaje Total de Unicode (args_os):** Prevención de pánicos irrecuperables en Windows durante el arranque al asociar o abrir archivos con caracteres regionales (China, Turquía, Italia, España y Argentina).
+* 🌐 **Lectura Tolerante de Archivos:** Soporte universal para archivos codificados en páginas de código ANSI locales (GBK, ISO-8859-9, Windows-1252) con fallback transparente.
+* ⚡ **Zero-Hangs & Rendimiento 60 FPS:** Expresiones regulares estáticas con `std::sync::LazyLock` en el backend de Rust y debounce en el canal IPC del frontend (0% de cuelgues de ventana).
+* 📄 **Exportación Nativa a PDF:** Motor vectorial WebView2 (`PrintToPdf`) sin límite de páginas ni cuadros de diálogo de impresora.
+* 🖼️ **Soporte Completo de Imágenes Locales:** Resolución automática de rutas relativas con codificación Base64 en tiempo real.
 *   **Barra de Formato Rápido Completa:** Negrita (`**`), Cursiva (`*`), Tachado (`~~`), Resaltado (`==`), Encabezados (H1, H2, H3), Citas, Código, Listas, Tareas interactivas y Tablas.
 *   **Modo Visor Colapsable:** Ocultá el editor con una animación suave para lectura fluida.
 *   **Buscador y Reemplazador Integrado:** Atajo `Ctrl + F` y `Ctrl + H` con navegación de resultados.

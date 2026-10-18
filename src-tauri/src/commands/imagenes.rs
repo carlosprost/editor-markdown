@@ -5,8 +5,14 @@ use base64::prelude::*;
 use regex::Regex;
 use serde::Serialize;
 use std::path::{Path, PathBuf};
+use std::sync::LazyLock;
 use tauri::AppHandle;
 use tauri_plugin_dialog::DialogExt;
+
+/// Expresión regular estática compilada una sola vez para capturar la etiqueta <img> y su atributo src.
+static RE_IMG: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"(?is)(<img\b[^>]*?\bsrc\s*=\s*["'])([^"']+)(["'][^>]*?>)"#).unwrap()
+});
 
 /// Información de una imagen seleccionada mediante el diálogo nativo.
 #[derive(Serialize)]
@@ -44,10 +50,14 @@ pub async fn seleccionar_imagen(
         None => return Ok(None),
     };
 
-    let ruta_abs_str = archivo_path.to_string();
-    let path_obj = Path::new(&ruta_abs_str);
+    let path_buf = match archivo_path.into_path() {
+        Ok(p) => p,
+        Err(fp) => PathBuf::from(fp.to_string()),
+    };
 
-    let nombre = path_obj
+    let ruta_abs_str = path_buf.to_string_lossy().to_string();
+
+    let nombre = path_buf
         .file_name()
         .and_then(|n| n.to_str())
         .unwrap_or("imagen.png")
@@ -148,13 +158,7 @@ fn resolver_ruta_disco(src: &str, ruta_base: Option<&str>) -> Option<PathBuf> {
 /// * `html` - Código HTML parseado del documento.
 /// * `ruta_base` - Ruta absoluta del archivo Markdown actual para resolver rutas relativas.
 pub fn incrustar_imagenes_locales(html: &str, ruta_base: Option<&str>) -> String {
-    // Expresión regular para capturar la etiqueta <img> y su atributo src
-    let re_img = match Regex::new(r#"(?is)(<img\b[^>]*?\bsrc\s*=\s*["'])([^"']+)(["'][^>]*?>)"#) {
-        Ok(re) => re,
-        Err(_) => return html.to_string(),
-    };
-
-    re_img
+    RE_IMG
         .replace_all(html, |caps: &regex::Captures| {
             let pre = &caps[1];
             let src = &caps[2];

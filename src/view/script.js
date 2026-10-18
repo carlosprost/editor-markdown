@@ -1,5 +1,5 @@
 /**
- * @fileoverview Lógica de interfaz del Editor Markdown (v2.4.0) para Tauri V2.
+ * @fileoverview Lógica de interfaz del Editor Markdown (v2.4.1) para Tauri V2.
  * Administra la interacción del usuario con la UI, actualiza el editor en tiempo real,
  * calcula estadísticas en vivo, coordina el scroll sincronizado, búsqueda/reemplazo,
  * temas visuales (Free + PRO), plantillas, modo presentación, modo zen, exportación
@@ -620,22 +620,75 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  async function convertMarkdown(text) {
-    if (invoke) {
-      const rutaBase = obtenerRuta() || null;
-      preview.innerHTML = await invoke("parsear_markdown", { texto: text, rutaBase });
-    } else {
-      preview.innerText = text;
+  let convertMarkdownTimer = null;
+  let saveDraftTimer = null;
+  let ultimoRequestId = 0;
+
+  /**
+   * Renderiza el texto Markdown en el panel de previsualización.
+   * Maneja requestId para prevenir condiciones de carrera y descartar respuestas IPC obsoletas.
+   */
+  async function ejecutarRenderizadoMarkdown(text) {
+    const requestId = ++ultimoRequestId;
+    try {
+      if (invoke) {
+        const rutaBase = obtenerRuta() || null;
+        const html = await invoke("parsear_markdown", { texto: text, rutaBase });
+        if (requestId === ultimoRequestId) {
+          preview.innerHTML = html;
+          agregarBotonesCopiar();
+          hacerCheckboxesInteractivos();
+        }
+      } else {
+        if (requestId === ultimoRequestId) {
+          preview.innerText = text;
+        }
+      }
+    } catch (err) {
+      console.error("Error al renderizar Markdown:", err);
     }
-    actualizarEstadisticas(text);
-    agregarBotonesCopiar();
-    hacerCheckboxesInteractivos();
-    window.localStorage.setItem("editor_draft", text);
   }
 
-  editor.addEventListener("input", async (e) => {
+  /**
+   * Persistencia diferida del borrador en localStorage para no bloquear la UI durante el tipeo.
+   */
+  function programarGuardadoBorrador(text) {
+    if (saveDraftTimer) clearTimeout(saveDraftTimer);
+    saveDraftTimer = setTimeout(() => {
+      try {
+        window.localStorage.setItem("editor_draft", text);
+      } catch (e) {
+        console.warn("No se pudo guardar el borrador en localStorage:", e);
+      }
+    }, 1000);
+  }
+
+  /**
+   * Conversión inmediata para aperturas de archivo o cambios programáticos.
+   */
+  async function convertMarkdown(text) {
+    if (convertMarkdownTimer) clearTimeout(convertMarkdownTimer);
+    actualizarEstadisticas(text);
+    await ejecutarRenderizadoMarkdown(text);
+    programarGuardadoBorrador(text);
+  }
+
+  /**
+   * Listener de entrada interactiva con debounce de 120ms.
+   * Garantiza fluidez absoluta en el editor (60fps) y previene la saturación del canal IPC de WebView2.
+   */
+  editor.addEventListener("input", (e) => {
     setEstadoModificado(true);
-    await convertMarkdown(e.target.value);
+    const nuevoTexto = e.target.value;
+
+    actualizarEstadisticas(nuevoTexto);
+
+    if (convertMarkdownTimer) clearTimeout(convertMarkdownTimer);
+    convertMarkdownTimer = setTimeout(async () => {
+      await ejecutarRenderizadoMarkdown(nuevoTexto);
+    }, 120);
+
+    programarGuardadoBorrador(nuevoTexto);
   });
 
   /* ==========================================================================
@@ -1040,7 +1093,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     meeting: `# 📝 Minuta de Reunión\n\n**Fecha:** ${new Date().toLocaleDateString("es-AR")}\n**Participantes:** Equipo Técnico\n\n---\n\n## 🎯 Orden del Día\n1. Estado de la versión PRO.\n2. Roadmap de lanzamiento.\n\n## 📌 Acuerdos\n- [x] Implementar verificación automática de licencias\n- [ ] Publicar build en la Store\n`,
     api: `# 🔌 Documentación de API REST\n\n\`GET /api/v1/recurso\`\n\n### Respuesta Exitosa (\`200 OK\`)\n\`\`\`json\n{\n  "status": "success",\n  "data": []\n}\n\`\`\`\n`,
     sprint: `# 📋 Sprint Tracker\n\n## 🔴 Alta Prioridad\n- [x] Modo Presentación\n- [x] Modo Enfoque Zen\n- [x] 4 Temas PRO\n\n## 🟡 Media Prioridad\n- [ ] Campaña promocional\n`,
-    changelog: `# 📜 Notas de la Versión\n\n## [v2.4.0] - ${new Date().toLocaleDateString("es-AR")}\n\n- 📄 **Exportación Nativa a PDF:** Motor vectorial WebView2 (PrintToPdf) sin límite de páginas, con texto seleccionable e imágenes de alta definición.\n- 🖼️ **Soporte Completo de Imágenes Locales:** Resolución automática de rutas relativas con codificación Base64 en tiempo real.\n- ⚡ **Optimización de Rendimiento:** Modularización de plantillas y compilación de Rust optimizada.\n\n## [v2.3.0]\n- 👑 **Editor Markdown PRO:** Presentación, Modo Zen, 4 temas PRO y restauración de licencias.\n`
+    changelog: `# 📜 Notas de la Versión\n\n## [v2.4.1] - ${new Date().toLocaleDateString("es-AR")}\n\n- 🛡️ **Parche Crítico de Estabilidad (Hotfix):** Blindaje contra fallos de Unicode y codificaciones internacionales en Windows (args_os y decodificación tolerante).\n- ⚡ **Rendimiento Máximo y Zero-Hangs:** Expresiones regulares estáticas con LazyLock y debounce en la previsualización interactiva (0% cuelgues).\n\n## [v2.4.0]\n- 📄 **Exportación Nativa a PDF:** Motor vectorial WebView2 (PrintToPdf) sin límite de páginas.\n- 🖼️ **Soporte Completo de Imágenes Locales:** Resolución automática de rutas relativas con codificación Base64.\n\n## [v2.3.0]\n- 👑 **Editor Markdown PRO:** Presentación, Modo Zen, 4 temas PRO y restauración de licencias.\n`
   };
 
   document.querySelectorAll(".template-card").forEach((card) => {

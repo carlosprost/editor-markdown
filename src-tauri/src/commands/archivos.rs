@@ -27,6 +27,21 @@ pub struct ArchivoGuardado {
     pub nombre: String,
 }
 
+/// Lee el contenido de un archivo de texto de forma segura y tolerante a fallos de codificación.
+/// Intenta primero decodificarlo como UTF-8 estricto. Si contiene bytes no válidos
+/// (típico de archivos creados en Windows con codificaciones ANSI regionales como GBK en China,
+/// ISO-8859 en Turquía o Windows-1252 en Europa/Latinoamérica), utiliza decodificación tolerante (lossy).
+fn leer_archivo_texto_seguro(path: &std::path::Path) -> Result<String, String> {
+    let bytes = std::fs::read(path).map_err(|e| format!("No se pudo leer el archivo: {}", e))?;
+    match String::from_utf8(bytes) {
+        Ok(texto) => Ok(texto),
+        Err(e) => {
+            let raw_bytes = e.into_bytes();
+            Ok(String::from_utf8_lossy(&raw_bytes).into_owned())
+        }
+    }
+}
+
 /// Abre un diálogo nativo para seleccionar un archivo Markdown (.md)
 /// y retorna su ruta, nombre y contenido al frontend.
 ///
@@ -46,12 +61,15 @@ pub async fn abrir_archivo(app: AppHandle) -> Result<Option<ArchivoAbierto>, Str
         None => return Ok(None), // El usuario canceló el diálogo
     };
 
-    let ruta_str = ruta_path.to_string();
+    let path_buf = match ruta_path.into_path() {
+        Ok(p) => p,
+        Err(fp) => std::path::PathBuf::from(fp.to_string()),
+    };
 
-    let contenido = std::fs::read_to_string(&ruta_str)
-        .map_err(|e| format!("No se pudo leer el archivo: {}", e))?;
+    let contenido = leer_archivo_texto_seguro(&path_buf)?;
+    let ruta_str = path_buf.to_string_lossy().to_string();
 
-    let nombre = std::path::Path::new(&ruta_str)
+    let nombre = path_buf
         .file_name()
         .and_then(|n| n.to_str())
         .unwrap_or("sin_nombre.md")
@@ -67,25 +85,32 @@ pub async fn abrir_archivo(app: AppHandle) -> Result<Option<ArchivoAbierto>, Str
 /// Obtiene el archivo Markdown pasado como argumento de línea de comandos al iniciar la aplicación.
 /// Permite abrir archivos directamente al hacer doble clic o mediante "Abrir con..." en Windows.
 ///
+/// # Robustez y Estabilidad
+/// Utiliza `std::env::args_os()` en lugar de `std::env::args()` para prevenir pánicos
+/// irrecuperables cuando la ruta contiene caracteres de idiomas regionales (China, Turquía, etc.).
+///
 /// # Seguridad (OWASP A01 / A03)
 /// - Valida que la ruta provenga de un archivo existente en el sistema de archivos.
 /// - Valida estrictamente que la extensión sea `.md` o `.markdown`.
 /// - Sanitiza el manejo de rutas usando `std::path::Path`.
 #[tauri::command]
 pub async fn obtener_archivo_inicio() -> Result<Option<ArchivoAbierto>, String> {
-    // Saltamos el primer argumento (ruta del ejecutable)
-    for arg in std::env::args().skip(1) {
+    // std::env::args_os() previene pánicos si Windows pasa argumentos con bytes no-UTF8
+    for arg_os in std::env::args_os().skip(1) {
+        let path = std::path::PathBuf::from(arg_os);
+
         // Ignoramos flags de línea de comandos (ej. flags de Tauri o Chromium)
-        if arg.starts_with("--") || arg.starts_with("-") {
-            continue;
+        if let Some(arg_str) = path.to_str() {
+            if arg_str.starts_with("--") || arg_str.starts_with('-') {
+                continue;
+            }
         }
 
-        let path = std::path::Path::new(&arg);
         if path.is_file() {
             if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
                 let ext_lower = ext.to_lowercase();
                 if ext_lower == "md" || ext_lower == "markdown" {
-                    if let Ok(contenido) = std::fs::read_to_string(path) {
+                    if let Ok(contenido) = leer_archivo_texto_seguro(&path) {
                         let nombre = path
                             .file_name()
                             .and_then(|n| n.to_str())
@@ -119,9 +144,14 @@ pub async fn leer_archivo(ruta: String) -> Result<Option<String>, String> {
         return Ok(None);
     }
 
-    match std::fs::read_to_string(&ruta) {
+    let path = std::path::Path::new(&ruta);
+    if !path.is_file() {
+        return Ok(None);
+    }
+
+    match leer_archivo_texto_seguro(path) {
         Ok(contenido) => Ok(Some(contenido)),
-        Err(_) => Ok(None), // Retorna None si el archivo fue movido o eliminado
+        Err(_) => Ok(None), // Retorna None si el archivo no puede ser leído o fue eliminado
     }
 }
 
@@ -166,12 +196,16 @@ pub async fn guardar_como(
         None => return Ok(None),
     };
 
-    let ruta_str = ruta_path.to_string();
+    let path_buf = match ruta_path.into_path() {
+        Ok(p) => p,
+        Err(fp) => std::path::PathBuf::from(fp.to_string()),
+    };
 
-    std::fs::write(&ruta_str, contenido.as_bytes())
+    std::fs::write(&path_buf, contenido.as_bytes())
         .map_err(|e| format!("No se pudo guardar el archivo: {}", e))?;
 
-    let nombre = std::path::Path::new(&ruta_str)
+    let ruta_str = path_buf.to_string_lossy().to_string();
+    let nombre = path_buf
         .file_name()
         .and_then(|n| n.to_str())
         .unwrap_or("NuevoArchivo.md")
@@ -205,9 +239,14 @@ pub async fn exportar_html(app: AppHandle, html_content: String) -> Result<bool,
         None => return Ok(false),
     };
 
+    let path_buf = match ruta_path.into_path() {
+        Ok(p) => p,
+        Err(fp) => std::path::PathBuf::from(fp.to_string()),
+    };
+
     let html_completo = generar_plantilla_html(&html_content);
 
-    std::fs::write(ruta_path.to_string(), html_completo.as_bytes())
+    std::fs::write(&path_buf, html_completo.as_bytes())
         .map(|_| true)
         .map_err(|e| format!("Error al exportar HTML: {}", e))
 }
@@ -254,7 +293,12 @@ pub async fn exportar_pdf(
         None => return Ok(false),
     };
 
-    std::fs::write(ruta_path.to_string(), &pdf_bytes)
+    let path_buf = match ruta_path.into_path() {
+        Ok(p) => p,
+        Err(fp) => std::path::PathBuf::from(fp.to_string()),
+    };
+
+    std::fs::write(&path_buf, &pdf_bytes)
         .map(|_| true)
         .map_err(|e| format!("Error al guardar el archivo PDF: {}", e))
 }
